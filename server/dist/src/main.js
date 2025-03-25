@@ -11,13 +11,10 @@ async function bootstrap() {
             whitelist: true,
         }));
         app.enableCors({
-            origin: [
-                process.env.CLIENT_URL || "http://localhost:3000",
-                "https://tunepulse-cwg9-ksgzegd2n-nehaaaas-projects-25d9595c.vercel.app",
-                "https://tunepulse.vercel.app",
-            ],
+            origin: "*",
             methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-            credentials: true,
+            allowedHeaders: ["Content-Type", "Authorization"],
+            credentials: false,
         });
         const port = process.env.PORT || 4000;
         await app.listen(port, "0.0.0.0");

@@ -16,13 +16,10 @@ async function bootstrap() {
 
     // Enable CORS
     app.enableCors({
-      origin: [
-        process.env.CLIENT_URL || "http://localhost:3000",
-        "https://tunepulse-cwg9-ksgzegd2n-nehaaaas-projects-25d9595c.vercel.app", // Your actual Vercel domain
-        "https://tunepulse.vercel.app", // Add your production domain if different
-      ],
+      origin: "*", // Allow all origins temporarily for testing
       methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-      credentials: true,
+      allowedHeaders: ["Content-Type", "Authorization"],
+      credentials: false, // Set to false when using '*' for origin
     });
 
     // Use PORT from environment or fallback to 4000

@@ -5,23 +5,32 @@ export class SongService {
 
   async getAllSongs(): Promise<Song[]> {
     try {
-      const response = await fetch(`${this.baseUrl}/songs`);
+      const response = await fetch(`${this.baseUrl}/songs`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       if (!response.ok) {
         throw new Error(`Failed to fetch songs: ${response.statusText}`);
       }
       return response.json();
     } catch (error: unknown) {
       console.error("Error fetching songs:", error);
-      const errorMessage =
-        error instanceof Error ? error.message : "Unknown error occurred";
-      throw new Error(errorMessage);
+      throw new Error("Failed to load songs. Please try again.");
     }
   }
 
   async searchSongs(query: string): Promise<Song[]> {
     try {
       const response = await fetch(
-        `${this.baseUrl}/songs/search?q=${encodeURIComponent(query)}`
+        `${this.baseUrl}/songs/search?q=${encodeURIComponent(query)}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
       );
       if (!response.ok) {
         throw new Error(`Search failed: ${response.statusText}`);
@@ -29,9 +38,7 @@ export class SongService {
       return response.json();
     } catch (error: unknown) {
       console.error("Error searching songs:", error);
-      const errorMessage =
-        error instanceof Error ? error.message : "Unknown error occurred";
-      throw new Error(errorMessage);
+      throw new Error("Failed to search songs. Please try again.");
     }
   }
 }

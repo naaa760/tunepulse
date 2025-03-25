@@ -25,7 +25,13 @@ export const favoriteService = {
   // Get all favorites
   async getFavorites(): Promise<Favorite[]> {
     const response = await fetch(
-      `${API_URL}/favorites?userId=${DEFAULT_USER_ID}`
+      `${API_URL}/favorites?userId=${DEFAULT_USER_ID}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
     );
     if (!response.ok) {
       throw new Error("Failed to fetch favorites");
