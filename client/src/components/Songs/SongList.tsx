@@ -26,9 +26,9 @@ export const SongList = () => {
         songService.getAllSongs(),
         favoriteService.getFavorites(),
       ]);
-      const uniqueSongs = songsData.filter(
-        (song, index, self) => index === self.findIndex((s) => s.id === song.id)
-      );
+
+      // Filter out duplicate songs by title and artist
+      const uniqueSongs = filterDuplicateSongs(songsData);
       setSongs(uniqueSongs);
       setFavorites(favoritesData);
     } catch (err) {
@@ -44,13 +44,30 @@ export const SongList = () => {
       setLoading(true);
       setError(null);
       const results = await songService.searchSongs(query);
-      setSongs(results);
+
+      // Filter out duplicate songs by title and artist
+      const uniqueResults = filterDuplicateSongs(results);
+      setSongs(uniqueResults);
     } catch (err: any) {
       console.error("Search failed:", err);
       setError(err.message || "Failed to search songs");
     } finally {
       setLoading(false);
     }
+  };
+
+  // Helper function to filter out duplicate songs
+  const filterDuplicateSongs = (songList: Song[]): Song[] => {
+    const uniqueSongs = new Map<string, Song>();
+
+    songList.forEach((song) => {
+      const key = `${song.title}-${song.artist}`;
+      if (!uniqueSongs.has(key)) {
+        uniqueSongs.set(key, song);
+      }
+    });
+
+    return Array.from(uniqueSongs.values());
   };
 
   const handleToggleFavorite = async (songId: number) => {
@@ -65,7 +82,7 @@ export const SongList = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-4">
+    <div className="max-w-4xl mx-auto">
       <SongSearch onSearch={handleSearch} />
 
       {loading && (
@@ -90,7 +107,7 @@ export const SongList = () => {
         <div className="space-y-4 mt-6">
           {songs.map((song) => (
             <SongItem
-              key={`${song.id}-${song.title}`}
+              key={`${song.id}-${song.artist}-${song.title}`}
               song={song}
               isFavorite={favorites.some((fav) => fav.songId === song.id)}
               onToggleFavorite={handleToggleFavorite}
