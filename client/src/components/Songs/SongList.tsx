@@ -82,39 +82,56 @@ export const SongList = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <SongSearch onSearch={handleSearch} />
+    <div
+      className="relative min-h-screen p-6 rounded-xl"
+      style={{
+        backgroundImage: "url('/sg.jpg')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
+      <div className="absolute inset-0 bg-black bg-opacity-60 backdrop-blur-sm rounded-xl" />
 
-      {loading && (
-        <div className="flex justify-center py-8">
-          <div className="text-gray-600">Loading songs...</div>
-        </div>
-      )}
+      <div className="relative z-10">
+        <div className="max-w-4xl mx-auto bg-white bg-opacity-10 p-8 rounded-2xl backdrop-blur-md">
+          <SongSearch onSearch={handleSearch} />
 
-      {error && (
-        <div className="bg-red-50 text-red-600 p-4 rounded-md my-4">
-          {error}
-        </div>
-      )}
+          {loading && (
+            <div className="flex justify-center py-8">
+              <div className="text-white">Loading songs...</div>
+            </div>
+          )}
 
-      {!loading && !error && songs.length === 0 && (
-        <div className="text-center py-8 text-gray-500">
-          No songs found. Try searching for something else.
-        </div>
-      )}
+          {error && (
+            <div className="bg-red-500 bg-opacity-75 text-white p-4 rounded-md my-4">
+              {error}
+            </div>
+          )}
 
-      {!loading && !error && songs.length > 0 && (
-        <div className="space-y-4 mt-6">
-          {songs.map((song) => (
-            <SongItem
-              key={`${song.id}-${song.artist}-${song.title}`}
-              song={song}
-              isFavorite={favorites.some((fav) => fav.songId === song.id)}
-              onToggleFavorite={handleToggleFavorite}
-            />
-          ))}
+          {!loading && !error && songs.length === 0 && (
+            <div className="text-center py-8 text-white">
+              No songs found. Try searching for something else.
+            </div>
+          )}
+
+          {!loading && !error && songs.length > 0 && (
+            <div className="space-y-4">
+              {songs.map((song) => (
+                <div
+                  key={`${song.id}-${song.artist}-${song.title}`}
+                  className="transform hover:scale-105 transition-all duration-200 hover:shadow-xl"
+                >
+                  <SongItem
+                    song={song}
+                    isFavorite={favorites.some((fav) => fav.songId === song.id)}
+                    onToggleFavorite={handleToggleFavorite}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 };
