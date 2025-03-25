@@ -4,6 +4,6 @@ import { Favorite } from "./favorite.entity";
 export declare class FavoritesController {
     private readonly favoritesService;
     constructor(favoritesService: FavoritesService);
-    toggleFavorite(createFavoriteDto: CreateFavoriteDto): Promise<Favorite>;
     findAll(userId?: string): Promise<Favorite[]>;
+    toggleFavorite(createFavoriteDto: CreateFavoriteDto): Promise<Favorite>;
 }

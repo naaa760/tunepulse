@@ -6,54 +6,36 @@ const DEFAULT_USER_ID = "default"; // For demo purposes
 export const favoriteService = {
   // Toggle favorite status
   async toggleFavorite(songId: number): Promise<Favorite> {
-    try {
-      const response = await fetch(`${API_URL}/favorites/toggle`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify({
-          songId,
-          userId: DEFAULT_USER_ID,
-        }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => null);
-        throw new Error(errorData?.message || "Failed to toggle favorite");
-      }
-
-      return response.json();
-    } catch (error) {
-      console.error("Toggle favorite error:", error);
-      throw new Error("Failed to update favorite. Please try again.");
+    const response = await fetch(`${API_URL}/favorites/toggle`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        songId,
+        userId: DEFAULT_USER_ID,
+      }),
+    });
+    if (!response.ok) {
+      throw new Error("Failed to toggle favorite");
     }
+    return response.json();
   },
 
   // Get all favorites
   async getFavorites(): Promise<Favorite[]> {
-    try {
-      const response = await fetch(
-        `${API_URL}/favorites?userId=${DEFAULT_USER_ID}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-        }
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => null);
-        throw new Error(errorData?.message || "Failed to fetch favorites");
+    const response = await fetch(
+      `${API_URL}/favorites?userId=${DEFAULT_USER_ID}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
       }
-
-      return response.json();
-    } catch (error) {
-      console.error("Get favorites error:", error);
-      throw new Error("Failed to load favorites. Please try again.");
+    );
+    if (!response.ok) {
+      throw new Error("Failed to fetch favorites");
     }
+    return response.json();
   },
 };
