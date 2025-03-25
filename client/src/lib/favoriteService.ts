@@ -65,8 +65,9 @@ export const favoriteService = {
       let data;
       try {
         data = responseText ? JSON.parse(responseText) : null;
-      } catch (e) {
-        console.error("Failed to parse response:", responseText);
+      } catch (error) {
+        // Log the error and the response text
+        console.error("Failed to parse response:", responseText, error);
       }
 
       // Handle error responses
