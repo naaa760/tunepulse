@@ -21,14 +21,19 @@ let FavoritesController = class FavoritesController {
     constructor(favoritesService) {
         this.favoritesService = favoritesService;
     }
-    findAll(userId) {
-        if (userId) {
-            return this.favoritesService.findByUserId(userId);
+    async findAll(userId) {
+        if (!userId) {
+            throw new common_1.HttpException("UserId is required", common_1.HttpStatus.BAD_REQUEST);
         }
-        return this.favoritesService.findAll();
+        return this.favoritesService.findByUserId(userId);
     }
-    toggleFavorite(createFavoriteDto) {
-        return this.favoritesService.toggleFavorite(createFavoriteDto);
+    async toggleFavorite(createFavoriteDto) {
+        try {
+            return await this.favoritesService.toggleFavorite(createFavoriteDto);
+        }
+        catch (error) {
+            throw new common_1.HttpException("Failed to toggle favorite", common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 };
 exports.FavoritesController = FavoritesController;

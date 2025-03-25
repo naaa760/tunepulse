@@ -29,9 +29,9 @@ model Song {
 model Favorite {
   id        Int      @id @default(autoincrement())
   songId    Int
-  userId    String   // For future auth implementation
+  userId    String
   createdAt DateTime @default(now())
   song      Song     @relation(fields: [songId], references: [id])
 
-  @@unique([songId, userId])
+  @@unique([songId, userId], name: "songId_userId")
 }

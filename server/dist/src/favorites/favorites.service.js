@@ -33,32 +33,28 @@ let FavoritesService = class FavoritesService {
     }
     async findByUserId(userId) {
         try {
-            const favorites = (await this.prisma.favorite.findMany({
-                where: {
-                    userId,
-                },
-                include: {
-                    song: true,
-                },
-            }));
-            return favorites;
+            return await this.prisma.favorite.findMany({
+                where: { userId },
+                include: { song: true },
+            });
         }
         catch (error) {
-            console.error(`Error fetching favorites for user ${userId}:`, error);
-            throw new Error(`Failed to fetch favorites for user ${userId}`);
+            console.error("Error in findByUserId:", error);
+            throw new common_1.HttpException("Failed to fetch favorites", common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     async toggleFavorite(createFavoriteDto) {
         try {
-            const existingFavorite = (await this.prisma.favorite.findFirst({
+            const { songId, userId } = createFavoriteDto;
+            const existingFavorite = await this.prisma.favorite.findUnique({
                 where: {
-                    songId: createFavoriteDto.songId,
-                    userId: createFavoriteDto.userId,
+                    songId_userId: {
+                        songId,
+                        userId,
+                    },
                 },
-                include: {
-                    song: true,
-                },
-            }));
+                include: { song: true },
+            });
             if (existingFavorite) {
                 await this.prisma.favorite.delete({
                     where: {
@@ -67,17 +63,19 @@ let FavoritesService = class FavoritesService {
                 });
                 return existingFavorite;
             }
-            const favorite = (await this.prisma.favorite.create({
-                data: createFavoriteDto,
-                include: {
-                    song: true,
-                },
-            }));
-            return favorite;
+            else {
+                return await this.prisma.favorite.create({
+                    data: {
+                        songId,
+                        userId,
+                    },
+                    include: { song: true },
+                });
+            }
         }
         catch (error) {
-            console.error("Error toggling favorite:", error);
-            throw new Error("Failed to toggle favorite");
+            console.error("Error in toggleFavorite:", error);
+            throw new common_1.HttpException("Failed to toggle favorite", common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 };
