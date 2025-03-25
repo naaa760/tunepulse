@@ -7,17 +7,24 @@ async function bootstrap() {
     const app = await NestFactory.create(AppModule);
 
     // Enable validation
-    app.useGlobalPipes(new ValidationPipe());
+    app.useGlobalPipes(
+      new ValidationPipe({
+        transform: true,
+        whitelist: true,
+      })
+    );
 
     // Enable CORS
     app.enableCors({
-      origin: "http://localhost:3000", // Your frontend URL
+      origin: process.env.CLIENT_URL || "http://localhost:3000",
       methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
       credentials: true,
     });
 
+    // Use PORT from environment or fallback to 4000
     const port = process.env.PORT || 4000;
-    await app.listen(port);
+
+    await app.listen(port, "0.0.0.0"); // Listen on all network interfaces
     console.log(`Application is running on: http://localhost:${port}`);
   } catch (error) {
     console.error("Failed to start application:", error);

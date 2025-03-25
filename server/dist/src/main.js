@@ -6,14 +6,17 @@ const common_1 = require("@nestjs/common");
 async function bootstrap() {
     try {
         const app = await core_1.NestFactory.create(app_module_1.AppModule);
-        app.useGlobalPipes(new common_1.ValidationPipe());
+        app.useGlobalPipes(new common_1.ValidationPipe({
+            transform: true,
+            whitelist: true,
+        }));
         app.enableCors({
-            origin: "http://localhost:3000",
+            origin: process.env.CLIENT_URL || "http://localhost:3000",
             methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
             credentials: true,
         });
         const port = process.env.PORT || 4000;
-        await app.listen(port);
+        await app.listen(port, "0.0.0.0");
         console.log(`Application is running on: http://localhost:${port}`);
     }
     catch (error) {
