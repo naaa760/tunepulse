@@ -14,19 +14,16 @@ async function bootstrap() {
       })
     );
 
-    // More permissive CORS configuration
+    // Add proper CORS configuration
     app.enableCors({
-      origin: true,
-      methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
-      credentials: false,
-      allowedHeaders:
-        "Content-Type,Accept,Authorization,Origin,X-Requested-With",
-      exposedHeaders: "Content-Range,X-Content-Range",
-      maxAge: 3600,
+      origin: true, // Allow requests from any origin in development
+      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+      allowedHeaders: ["Content-Type", "Authorization"],
+      credentials: true,
     });
 
     // Add CORS preflight handler
-    app.use((req: Request, res: Response, next: Function) => {
+    app.use((req: Request, res: Response, next: () => void) => {
       res.header("Access-Control-Allow-Origin", "*");
       res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS");
       res.header(
