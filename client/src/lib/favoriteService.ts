@@ -1,6 +1,7 @@
 import { Favorite } from "../types/Favorite";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+const API_URL = "http://localhost:4000";
+const DEFAULT_USER_ID = "default"; // For demo purposes
 
 export const favoriteService = {
   // Toggle favorite status
@@ -10,7 +11,10 @@ export const favoriteService = {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ songId }),
+      body: JSON.stringify({
+        songId,
+        userId: DEFAULT_USER_ID,
+      }),
     });
     if (!response.ok) {
       throw new Error("Failed to toggle favorite");
@@ -20,7 +24,9 @@ export const favoriteService = {
 
   // Get all favorites
   async getFavorites(): Promise<Favorite[]> {
-    const response = await fetch(`${API_URL}/favorites`);
+    const response = await fetch(
+      `${API_URL}/favorites?userId=${DEFAULT_USER_ID}`
+    );
     if (!response.ok) {
       throw new Error("Failed to fetch favorites");
     }

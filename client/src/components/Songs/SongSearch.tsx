@@ -7,21 +7,20 @@ interface SongSearchProps {
 }
 
 export const SongSearch = ({ onSearch }: SongSearchProps) => {
-  const [searchQuery, setSearchQuery] = useState("");
+  const [query, setQuery] = useState("");
 
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const query = e.target.value;
-    setSearchQuery(query);
-    onSearch(query);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(e.target.value);
+    onSearch(e.target.value);
   };
 
   return (
     <div className="mb-6">
       <input
         type="text"
-        placeholder="Search songs..."
-        value={searchQuery}
-        onChange={handleSearch}
+        value={query}
+        onChange={handleChange}
+        placeholder="Search songs by title or artist..."
         className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:border-blue-500"
       />
     </div>

@@ -5,4 +5,5 @@ export interface Song {
   albumArt?: string;
   duration: string;
   createdAt: string;
+  previewUrl?: string;
 }

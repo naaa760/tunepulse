@@ -11,41 +11,43 @@ import { SongItem } from "./SongItem";
 export const SongList = () => {
   const [songs, setSongs] = useState<Song[]>([]);
   const [favorites, setFavorites] = useState<Favorite[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    loadSongs();
-    loadFavorites();
+    loadInitialData();
   }, []);
 
-  const loadSongs = async () => {
+  const loadInitialData = async () => {
     try {
-      const data = await songService.getAllSongs();
-      setSongs(data);
-    } catch {
-      setError("Failed to load songs");
+      setLoading(true);
+      setError(null);
+      const [songsData, favoritesData] = await Promise.all([
+        songService.getAllSongs(),
+        favoriteService.getFavorites(),
+      ]);
+      const uniqueSongs = songsData.filter(
+        (song, index, self) => index === self.findIndex((s) => s.id === song.id)
+      );
+      setSongs(uniqueSongs);
+      setFavorites(favoritesData);
+    } catch (err) {
+      console.error("Error loading initial data:", err);
+      setError("Failed to load songs. Please try again.");
     } finally {
       setLoading(false);
-    }
-  };
-
-  const loadFavorites = async () => {
-    try {
-      const data = await favoriteService.getFavorites();
-      setFavorites(data);
-    } catch {
-      setError("Failed to load favorites");
     }
   };
 
   const handleSearch = async (query: string) => {
     try {
       setLoading(true);
-      const data = await songService.searchSongs(query);
-      setSongs(data);
-    } catch {
-      setError("Failed to search songs");
+      setError(null);
+      const results = await songService.searchSongs(query);
+      setSongs(results);
+    } catch (err: any) {
+      console.error("Search failed:", err);
+      setError(err.message || "Failed to search songs");
     } finally {
       setLoading(false);
     }
@@ -54,28 +56,48 @@ export const SongList = () => {
   const handleToggleFavorite = async (songId: number) => {
     try {
       await favoriteService.toggleFavorite(songId);
-      await loadFavorites(); // Reload favorites after toggle
-    } catch {
-      setError("Failed to toggle favorite");
+      const updatedFavorites = await favoriteService.getFavorites();
+      setFavorites(updatedFavorites);
+    } catch (err) {
+      console.error("Error toggling favorite:", err);
+      setError("Failed to update favorite. Please try again.");
     }
   };
-
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div className="text-red-500">{error}</div>;
 
   return (
     <div className="max-w-4xl mx-auto p-4">
       <SongSearch onSearch={handleSearch} />
-      <div className="space-y-2">
-        {songs.map((song) => (
-          <SongItem
-            key={song.id}
-            song={song}
-            isFavorite={favorites.some((fav) => fav.songId === song.id)}
-            onToggleFavorite={handleToggleFavorite}
-          />
-        ))}
-      </div>
+
+      {loading && (
+        <div className="flex justify-center py-8">
+          <div className="text-gray-600">Loading songs...</div>
+        </div>
+      )}
+
+      {error && (
+        <div className="bg-red-50 text-red-600 p-4 rounded-md my-4">
+          {error}
+        </div>
+      )}
+
+      {!loading && !error && songs.length === 0 && (
+        <div className="text-center py-8 text-gray-500">
+          No songs found. Try searching for something else.
+        </div>
+      )}
+
+      {!loading && !error && songs.length > 0 && (
+        <div className="space-y-4 mt-6">
+          {songs.map((song) => (
+            <SongItem
+              key={`${song.id}-${song.title}`}
+              song={song}
+              isFavorite={favorites.some((fav) => fav.songId === song.id)}
+              onToggleFavorite={handleToggleFavorite}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 };
