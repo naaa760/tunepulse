@@ -14,12 +14,15 @@ async function bootstrap() {
       })
     );
 
-    // Enable CORS
+    // Enable CORS with specific configuration
     app.enableCors({
-      origin: "*", // Allow all origins temporarily for testing
-      methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-      allowedHeaders: ["Content-Type", "Authorization"],
-      credentials: false, // Set to false when using '*' for origin
+      origin: "*", // Keep this for now to debug
+      methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
+      allowedHeaders: ["Content-Type", "Accept", "Authorization"],
+      exposedHeaders: ["Content-Range", "X-Content-Range"],
+      credentials: false,
+      preflightContinue: false,
+      optionsSuccessStatus: 204,
     });
 
     // Use PORT from environment or fallback to 4000

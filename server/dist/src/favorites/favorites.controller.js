@@ -21,24 +21,29 @@ let FavoritesController = class FavoritesController {
     constructor(favoritesService) {
         this.favoritesService = favoritesService;
     }
-    findAll(userId) {
-        if (userId) {
-            return this.favoritesService.findByUserId(userId);
+    async toggleFavorite(createFavoriteDto) {
+        try {
+            return await this.favoritesService.toggleFavorite(createFavoriteDto);
         }
-        return this.favoritesService.findAll();
+        catch (error) {
+            console.error("Toggle favorite error:", error);
+            throw new common_1.HttpException("Failed to toggle favorite", common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
-    toggleFavorite(createFavoriteDto) {
-        return this.favoritesService.toggleFavorite(createFavoriteDto);
+    async findAll(userId) {
+        try {
+            if (userId) {
+                return await this.favoritesService.findByUserId(userId);
+            }
+            return await this.favoritesService.findAll();
+        }
+        catch (error) {
+            console.error("Get favorites error:", error);
+            throw new common_1.HttpException("Failed to fetch favorites", common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 };
 exports.FavoritesController = FavoritesController;
-__decorate([
-    (0, common_1.Get)(),
-    __param(0, (0, common_1.Query)("userId")),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], FavoritesController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Post)("toggle"),
     __param(0, (0, common_1.Body)()),
@@ -46,6 +51,13 @@ __decorate([
     __metadata("design:paramtypes", [create_favorite_dto_1.CreateFavoriteDto]),
     __metadata("design:returntype", Promise)
 ], FavoritesController.prototype, "toggleFavorite", null);
+__decorate([
+    (0, common_1.Get)(),
+    __param(0, (0, common_1.Query)("userId")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], FavoritesController.prototype, "findAll", null);
 exports.FavoritesController = FavoritesController = __decorate([
     (0, common_1.Controller)("favorites"),
     __metadata("design:paramtypes", [favorites_service_1.FavoritesService])
