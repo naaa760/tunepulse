@@ -1,6 +1,7 @@
 import { Song } from "@/types/Song";
 import { FavoriteToggle } from "../Favorites/FavoriteToggle";
 import { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 
 interface SongItemProps {
   song: Song;
@@ -56,9 +57,11 @@ export const SongItem = ({
       <div className="flex items-center p-4">
         <div className="flex-shrink-0 mr-4">
           {song.albumArt ? (
-            <img
+            <Image
               src={song.albumArt}
-              alt={`${song.title} album art`}
+              alt={`${song.title} by ${song.artist}`}
+              width={60}
+              height={60}
               className="w-16 h-16 rounded-md object-cover"
             />
           ) : (
