@@ -44,8 +44,14 @@ let FavoritesService = class FavoritesService {
         }
     }
     async toggleFavorite(createFavoriteDto) {
+        const { songId, userId } = createFavoriteDto;
         try {
-            const { songId, userId } = createFavoriteDto;
+            const song = await this.prisma.song.findUnique({
+                where: { id: songId },
+            });
+            if (!song) {
+                throw new common_1.HttpException("Song not found", common_1.HttpStatus.NOT_FOUND);
+            }
             const existingFavorite = await this.prisma.favorite.findFirst({
                 where: {
                     songId,
@@ -75,7 +81,9 @@ let FavoritesService = class FavoritesService {
             return newFavorite;
         }
         catch (error) {
-            console.error("Error in toggleFavorite:", error);
+            if (error instanceof common_1.HttpException) {
+                throw error;
+            }
             throw new common_1.HttpException("Failed to toggle favorite", common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
