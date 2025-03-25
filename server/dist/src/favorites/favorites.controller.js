@@ -29,10 +29,18 @@ let FavoritesController = class FavoritesController {
     }
     async toggleFavorite(createFavoriteDto) {
         try {
-            return await this.favoritesService.toggleFavorite(createFavoriteDto);
+            console.log("Received toggle request:", createFavoriteDto);
+            const result = await this.favoritesService.toggleFavorite(createFavoriteDto);
+            console.log("Toggle result:", result);
+            return result;
         }
         catch (error) {
-            throw new common_1.HttpException("Failed to toggle favorite", common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+            console.error("Toggle favorite error:", error);
+            throw new common_1.HttpException({
+                status: common_1.HttpStatus.INTERNAL_SERVER_ERROR,
+                error: "Failed to toggle favorite",
+                message: error instanceof Error ? error.message : "Unknown error occurred",
+            }, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 };

@@ -28,10 +28,20 @@ export class FavoritesController {
     @Body() createFavoriteDto: CreateFavoriteDto
   ): Promise<Favorite> {
     try {
-      return await this.favoritesService.toggleFavorite(createFavoriteDto);
+      console.log("Received toggle request:", createFavoriteDto);
+      const result =
+        await this.favoritesService.toggleFavorite(createFavoriteDto);
+      console.log("Toggle result:", result);
+      return result;
     } catch (error) {
+      console.error("Toggle favorite error:", error);
       throw new HttpException(
-        "Failed to toggle favorite",
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: "Failed to toggle favorite",
+          message:
+            error instanceof Error ? error.message : "Unknown error occurred",
+        },
         HttpStatus.INTERNAL_SERVER_ERROR
       );
     }

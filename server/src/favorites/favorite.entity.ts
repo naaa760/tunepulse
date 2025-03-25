@@ -5,5 +5,5 @@ export class Favorite {
   songId: number;
   userId: string;
   createdAt: Date;
-  song: Song;
+  song?: Song;
 }

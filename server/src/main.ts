@@ -16,10 +16,10 @@ async function bootstrap() {
 
     // Enable CORS
     app.enableCors({
-      origin: "*", // Allow all origins temporarily for testing
+      origin: true, // Allow all origins in development
       methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-      allowedHeaders: ["Content-Type", "Authorization"],
-      credentials: false, // Set to false when using '*' for origin
+      allowedHeaders: ["Content-Type", "Accept"],
+      credentials: true,
     });
 
     // Use PORT from environment or fallback to 4000

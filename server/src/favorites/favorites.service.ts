@@ -42,35 +42,38 @@ export class FavoritesService {
     try {
       const { songId, userId } = createFavoriteDto;
 
-      // Check if favorite exists
-      const existingFavorite = await this.prisma.favorite.findUnique({
+      const existingFavorite = await this.prisma.favorite.findFirst({
         where: {
-          songId_userId: {
-            songId,
-            userId,
-          },
+          songId,
+          userId,
         },
-        include: { song: true },
+        include: {
+          song: true,
+        },
       });
 
       if (existingFavorite) {
-        // Delete if exists
+        // If exists, delete it
         await this.prisma.favorite.delete({
           where: {
             id: existingFavorite.id,
           },
         });
         return existingFavorite;
-      } else {
-        // Create if doesn't exist
-        return await this.prisma.favorite.create({
-          data: {
-            songId,
-            userId,
-          },
-          include: { song: true },
-        });
       }
+
+      // If doesn't exist, create it
+      const newFavorite = await this.prisma.favorite.create({
+        data: {
+          songId,
+          userId,
+        },
+        include: {
+          song: true,
+        },
+      });
+
+      return newFavorite;
     } catch (error) {
       console.error("Error in toggleFavorite:", error);
       throw new HttpException(
