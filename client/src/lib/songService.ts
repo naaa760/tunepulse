@@ -1,7 +1,7 @@
 import { Song } from "../types/Song";
 
 export class SongService {
-  private baseUrl = "http://localhost:4000/songs"; // Make sure this matches your server port
+  private baseUrl = "http://localhost:4000";
 
   async getAllSongs(): Promise<Song[]> {
     try {

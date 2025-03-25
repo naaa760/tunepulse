@@ -33,27 +33,29 @@ let SongsService = class SongsService {
     async search(query) {
         try {
             const spotifyResults = await this.spotifyService.searchTracks(query);
-            if (spotifyResults.length === 0) {
-                console.log("No results found for query:", query);
-                return [];
-            }
-            const savedSongs = await Promise.all(spotifyResults.map((songData) => this.prisma.song.upsert({
-                where: {
-                    title_artist: {
+            const batchSize = 3;
+            const savedSongs = [];
+            for (let i = 0; i < spotifyResults.length; i += batchSize) {
+                const batch = spotifyResults.slice(i, i + batchSize);
+                const batchResults = await Promise.all(batch.map((songData) => this.prisma.song.upsert({
+                    where: {
+                        title_artist: {
+                            title: songData.title,
+                            artist: songData.artist,
+                        },
+                    },
+                    update: {},
+                    create: {
                         title: songData.title,
                         artist: songData.artist,
+                        albumArt: songData.albumArt,
+                        duration: songData.duration,
+                        createdAt: songData.createdAt,
+                        previewUrl: songData.previewUrl,
                     },
-                },
-                update: {},
-                create: {
-                    title: songData.title,
-                    artist: songData.artist,
-                    albumArt: songData.albumArt,
-                    duration: songData.duration,
-                    createdAt: songData.createdAt,
-                    previewUrl: songData.previewUrl,
-                },
-            })));
+                })));
+                savedSongs.push(...batchResults);
+            }
             return savedSongs;
         }
         catch (error) {
