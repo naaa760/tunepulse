@@ -21,10 +21,10 @@ export const SongSearch = ({ onSearch }: SongSearchProps) => {
         value={query}
         onChange={handleChange}
         placeholder="Search songs by title or artist..."
-        className="w-full px-6 py-4 rounded-xl border-2 border-white/20 
-          bg-white/10 backdrop-blur-sm
-          focus:outline-none focus:border-white/40
-          text-white text-lg placeholder-white/60
+        className="w-full px-6 py-4 rounded-xl border-2 border-gray-300 
+          bg-white bg-opacity-80 backdrop-blur-sm
+          focus:outline-none focus:border-indigo-500
+          text-gray-900 text-lg placeholder-gray-500
           transition-all duration-200"
       />
     </div>

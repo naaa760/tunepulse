@@ -15,43 +15,43 @@ export default function DashboardLayout({
 
       {/* Content */}
       <div className="relative z-10 min-h-screen">
-        <nav className="bg-black bg-opacity-80 shadow-md">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between h-16">
-              <div className="flex items-center">
-                <Link href="/" className="flex-shrink-0">
-                  <span className="text-2xl font-bold text-white">
-                    Music App
-                  </span>
-                </Link>
-                <div className="ml-10 flex items-baseline space-x-4">
-                  <Link
-                    href="/dashboard"
-                    className="px-3 py-2 rounded-md text-sm font-medium text-white hover:text-indigo-300 transition-colors"
-                  >
-                    Dashboard
+        <div className="p-4">
+          <nav className="max-w-7xl mx-auto backdrop-blur-md bg-white/10 rounded-full border border-white/20 shadow-lg">
+            <div className="px-6 py-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <Link href="/" className="flex-shrink-0">
+                    <span className="text-2xl font-bold text-white">
+                      Music App
+                    </span>
                   </Link>
-                  <Link
-                    href="/dashboard/favorites"
-                    className="px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-indigo-300 transition-colors"
-                  >
-                    Favorites
-                  </Link>
+                  <div className="ml-10 flex items-baseline space-x-4">
+                    <Link
+                      href="/dashboard"
+                      className="px-4 py-2 rounded-full text-sm font-medium text-white hover:bg-white/20 transition-all"
+                    >
+                      Dashboard
+                    </Link>
+                    <Link
+                      href="/dashboard/favorites"
+                      className="px-4 py-2 rounded-full text-sm font-medium text-white hover:bg-white/20 transition-all"
+                    >
+                      Favorites
+                    </Link>
+                  </div>
                 </div>
-              </div>
-              <div className="flex items-center">
-                <span className="inline-flex rounded-md shadow-sm">
+                <div className="flex items-center">
                   <Link
                     href="/"
-                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 transition-colors"
+                    className="px-6 py-2 rounded-full text-sm font-medium text-white border border-white/20 hover:bg-white/20 transition-all"
                   >
                     Home
                   </Link>
-                </span>
+                </div>
               </div>
             </div>
-          </div>
-        </nav>
+          </nav>
+        </div>
         {children}
       </div>
     </div>
