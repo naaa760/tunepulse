@@ -50,10 +50,8 @@ export const favoriteService = {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Accept: "application/json",
         },
         mode: "cors", // Explicitly set CORS mode
-        credentials: "include", // Include credentials if needed
         body: JSON.stringify({
           songId: numericSongId,
           userId: DEFAULT_USER_ID,
@@ -98,10 +96,8 @@ export const favoriteService = {
         {
           headers: {
             "Content-Type": "application/json",
-            Accept: "application/json",
           },
           mode: "cors", // Explicitly set CORS mode
-          credentials: "include", // Include credentials if needed
         }
       );
 

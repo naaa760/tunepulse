@@ -14,14 +14,14 @@ async function bootstrap() {
       })
     );
 
-    // Enable CORS with more permissive settings
+    // Fix CORS configuration
     app.enableCors({
-      origin: ["http://localhost:3000", "http://localhost:3001", "*"],
+      origin: true, // Allow all origins in development
       methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
       allowedHeaders: "Content-Type,Accept,Authorization",
-      credentials: true,
-      preflightContinue: false,
-      optionsSuccessStatus: 204,
+      exposedHeaders: ["Content-Length", "Date"],
+      credentials: false, // Change to false if you don't need credentials
+      maxAge: 86400, // 24 hours
     });
 
     // Use PORT from environment or fallback to 4000
