@@ -18,7 +18,8 @@ async function bootstrap() {
     app.enableCors({
       origin: [
         process.env.CLIENT_URL || "http://localhost:3000",
-        "https://your-frontend-domain.vercel.app",
+        "https://tunepulse-cwg9-ksgzegd2n-nehaaaas-projects-25d9595c.vercel.app", // Your actual Vercel domain
+        "https://tunepulse.vercel.app", // Add your production domain if different
       ],
       methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
       credentials: true,
