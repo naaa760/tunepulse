@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Song } from "@/types/Song";
-import { Favorite } from "@/types/Favorite";
+
 import { songService } from "@/lib/songService";
 import { favoriteService } from "@/lib/favoriteService";
 import { SongItem } from "@/components/Songs/SongItem";
@@ -24,7 +24,7 @@ export default function FavoritesPage() {
         favorites.some((fav) => fav.songId === song.id)
       );
       setFavoriteSongs(favSongs);
-    } catch (err) {
+    } catch {
       setError("Failed to load favorite songs");
     } finally {
       setLoading(false);
@@ -35,7 +35,7 @@ export default function FavoritesPage() {
     try {
       await favoriteService.toggleFavorite(songId);
       await loadFavoriteSongs();
-    } catch (err) {
+    } catch {
       setError("Failed to toggle favorite");
     }
   };

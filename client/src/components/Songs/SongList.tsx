@@ -23,7 +23,7 @@ export const SongList = () => {
     try {
       const data = await songService.getAllSongs();
       setSongs(data);
-    } catch (err) {
+    } catch {
       setError("Failed to load songs");
     } finally {
       setLoading(false);
@@ -34,7 +34,7 @@ export const SongList = () => {
     try {
       const data = await favoriteService.getFavorites();
       setFavorites(data);
-    } catch (err) {
+    } catch {
       setError("Failed to load favorites");
     }
   };
@@ -44,7 +44,7 @@ export const SongList = () => {
       setLoading(true);
       const data = await songService.searchSongs(query);
       setSongs(data);
-    } catch (err) {
+    } catch {
       setError("Failed to search songs");
     } finally {
       setLoading(false);
@@ -55,7 +55,7 @@ export const SongList = () => {
     try {
       await favoriteService.toggleFavorite(songId);
       await loadFavorites(); // Reload favorites after toggle
-    } catch (err) {
+    } catch {
       setError("Failed to toggle favorite");
     }
   };
