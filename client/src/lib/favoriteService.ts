@@ -50,11 +50,13 @@ export const favoriteService = {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Accept: "application/json",
         },
         body: JSON.stringify({
           songId: numericSongId,
           userId: DEFAULT_USER_ID,
         }),
+        cache: "no-cache",
       });
 
       // Get the response text
@@ -84,8 +86,8 @@ export const favoriteService = {
 
       return data;
     } catch (error) {
-      // Just rethrow the original error with its message intact
-      throw error;
+      console.error("Error in toggleFavorite:", error);
+      throw new Error("Failed to toggle favorite");
     }
   },
 
@@ -97,8 +99,9 @@ export const favoriteService = {
         {
           headers: {
             "Content-Type": "application/json",
+            Accept: "application/json",
           },
-          mode: "cors", // Explicitly set CORS mode
+          cache: "no-cache",
         }
       );
 
