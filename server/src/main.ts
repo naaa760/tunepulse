@@ -1,6 +1,7 @@
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
 import { ValidationPipe } from "@nestjs/common";
+import { Request, Response } from "express";
 
 async function bootstrap() {
   try {
@@ -14,14 +15,20 @@ async function bootstrap() {
       })
     );
 
-    // Fix CORS configuration
+    // Improved CORS configuration
     app.enableCors({
-      origin: true, // Allow all origins in development
+      origin: "*", // Allow all origins
       methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
-      allowedHeaders: "Content-Type,Accept,Authorization",
-      exposedHeaders: ["Content-Length", "Date"],
-      credentials: false, // Change to false if you don't need credentials
-      maxAge: 86400, // 24 hours
+      allowedHeaders: "*", // Allow all headers
+      preflightContinue: false,
+      optionsSuccessStatus: 204,
+    });
+
+    // Add health check endpoint
+    app.use("/health-check", (req: Request, res: Response) => {
+      res
+        .status(200)
+        .json({ status: "ok", timestamp: new Date().toISOString() });
     });
 
     // Use PORT from environment or fallback to 4000

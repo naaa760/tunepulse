@@ -8,7 +8,7 @@ import { Song } from "./song.entity";
 export class SongsService {
   constructor(
     private prisma: PrismaService,
-    private spotifyService: SpotifyService
+    private spotifyService: SpotifyService,
   ) {}
 
   async findAll(): Promise<Song[]> {
@@ -50,8 +50,8 @@ export class SongsService {
                 createdAt: songData.createdAt,
                 previewUrl: songData.previewUrl,
               },
-            })
-          )
+            }),
+          ),
         );
         savedSongs.push(...(batchResults as Song[]));
       }

@@ -51,7 +51,6 @@ export const favoriteService = {
         headers: {
           "Content-Type": "application/json",
         },
-        mode: "cors", // Explicitly set CORS mode
         body: JSON.stringify({
           songId: numericSongId,
           userId: DEFAULT_USER_ID,
@@ -60,6 +59,7 @@ export const favoriteService = {
 
       // Get the response text
       const responseText = await response.text();
+      console.log("Response text:", responseText);
 
       // Try to parse JSON
       let data;
