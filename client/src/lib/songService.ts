@@ -1,7 +1,7 @@
 import { Song } from "../types/Song";
 
 export class SongService {
-  private baseUrl = "http://localhost:4000";
+  private baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
   async getAllSongs(): Promise<Song[]> {
     try {

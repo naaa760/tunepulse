@@ -1,6 +1,6 @@
 import { Favorite } from "../types/Favorite";
 
-const API_URL = "http://localhost:4000";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 const DEFAULT_USER_ID = "default"; // For demo purposes
 
 export const favoriteService = {
