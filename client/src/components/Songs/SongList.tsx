@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Song } from "@/types/Song";
 import { Favorite } from "@/types/Favorite";
 import { songService } from "@/lib/songService";
@@ -14,11 +14,7 @@ export const SongList = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    loadInitialData();
-  }, []);
-
-  const loadInitialData = async () => {
+  const loadInitialData = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -37,7 +33,11 @@ export const SongList = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    loadInitialData();
+  }, [loadInitialData]);
 
   const handleSearch = async (query: string) => {
     try {
@@ -48,9 +48,11 @@ export const SongList = () => {
       // Filter out duplicate songs by title and artist
       const uniqueResults = filterDuplicateSongs(results);
       setSongs(uniqueResults);
-    } catch (err: any) {
+    } catch (err: Error | unknown) {
       console.error("Search failed:", err);
-      setError(err.message || "Failed to search songs");
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to search songs";
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
