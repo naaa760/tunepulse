@@ -5,6 +5,14 @@ const nextConfig = {
   },
   // Add this to disable font optimization if it's causing issues
   optimizeFonts: false,
+  async rewrites() {
+    return [
+      {
+        source: "/api/:path*",
+        destination: `${process.env.NEXT_PUBLIC_API_URL}/:path*`,
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig;
