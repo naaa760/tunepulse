@@ -7,37 +7,39 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { SongsService } from './songs.service';
-import { SpotifyTrackDto } from '../spotify/dto/spotify-track.dto';
+import { Song } from './song.entity';
 
 @Controller('songs')
 export class SongsController {
   constructor(private readonly songsService: SongsService) {}
 
   @Get()
-  findAll() {
-    return this.songsService.findAll();
+  async findAll(): Promise<Song[]> {
+    // Make sure we have sample data
+    const songs = await this.songsService.findAll();
+
+    if (songs.length === 0) {
+      // Add some sample songs if none exist
+      await this.songsService.createSampleSongs();
+      return this.songsService.findAll();
+    }
+
+    return songs;
   }
 
   @Get('search')
-  search(@Query('query') query: string): Promise<SpotifyTrackDto[]> {
-    return this.songsService.searchSongs(query);
-  }
-
-  @Get('top-tracks')
-  async getTopTracks() {
-    try {
-      console.log('Getting top tracks from Spotify...');
-      const result = await this.songsService.getTopTracks();
-      console.log(`Found ${result.length} top tracks`);
-      return result;
-    } catch (error) {
-      console.error('Error getting top tracks:', error);
-      throw error;
+  async search(@Query('query') query: string): Promise<Song[]> {
+    if (!query) {
+      throw new HttpException(
+        'Search query is required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
+    return this.songsService.search(query);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string): Promise<Song> {
     return this.songsService.findOne(id);
   }
 }

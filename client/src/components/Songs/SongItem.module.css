@@ -1,0 +1,53 @@
+.songItem {
+  border: 1px solid #eee;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+  background-color: white;
+}
+
+.songItem:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.songInfo {
+  display: flex;
+  padding: 1rem;
+}
+
+.albumArt {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.details {
+  margin-left: 1rem;
+  flex: 1;
+}
+
+.title {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.2rem;
+}
+
+.artist {
+  margin: 0;
+  color: #666;
+}
+
+.controls {
+  padding: 0.5rem 1rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid #eee;
+}
+
+.audioPlayer {
+  width: 75%;
+  height: 30px;
+}

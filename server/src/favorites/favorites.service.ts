@@ -1,126 +1,103 @@
-import {
-  Injectable,
-  NotFoundException,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { ToggleFavoriteDto } from '../dto/create-favorite.dto';
+import { Favorite } from './favorite.entity';
 
 @Injectable()
 export class FavoritesService {
   constructor(private prisma: PrismaService) {}
 
-  async addFavorite(userId: string, songId: string) {
-    try {
-      if (!userId || !songId) {
-        throw new NotFoundException(
-          `Invalid request: userId=${userId}, songId=${songId}`,
-        );
-      }
+  // For demo purposes, we'll use a hardcoded user ID
+  // In a real app, you'd get this from authentication
+  private readonly defaultUserId = '00000000-0000-0000-0000-000000000000';
 
-      // Check if song exists by spotifyId first (more reliable)
-      let song = await this.prisma.song.findUnique({
-        where: { spotifyId: songId },
-      });
+  // Get all favorites for a user
+  async findAll(): Promise<Favorite[]> {
+    // Make sure our demo user exists
+    await this.ensureUserExists();
 
-      // If not found by spotifyId, try by id
-      if (!song) {
-        song = await this.prisma.song.findUnique({
-          where: { id: songId },
-        });
-      }
-
-      if (!song) {
-        throw new NotFoundException(`Song with ID ${songId} not found`);
-      }
-
-      // Always use the database ID for creating the favorite
-      const dbSongId = song.id;
-
-      // Check if user exists (or create a demo user if needed)
-      let user = await this.prisma.user.findUnique({
-        where: { id: userId },
-      });
-
-      if (!user) {
-        // Create a demo user for testing
-        user = await this.prisma.user.create({
-          data: {
-            id: userId,
-            email: `${userId}@example.com`,
-            name: `User ${userId}`,
-          },
-        });
-      }
-
-      // Check if favorite already exists
-      const existingFavorite = await this.prisma.favorite.findFirst({
-        where: {
-          userId,
-          songId: dbSongId,
-        },
-      });
-
-      if (existingFavorite) {
-        return existingFavorite;
-      }
-
-      // Create favorite
-      return this.prisma.favorite.create({
-        data: {
-          userId,
-          songId: dbSongId,
-        },
-        include: {
-          song: true,
-        },
-      });
-    } catch (error) {
-      console.error('Error adding favorite:', error);
-      if (error instanceof NotFoundException) {
-        throw error;
-      }
-      throw new InternalServerErrorException('Failed to add favorite');
-    }
-  }
-
-  async removeFavorite(userId: string, songId: string) {
-    const favorite = await this.prisma.favorite.findFirst({
-      where: {
-        userId,
-        songId,
-      },
-    });
-
-    if (!favorite) {
-      throw new NotFoundException(`Favorite not found`);
-    }
-
-    return this.prisma.favorite.delete({
-      where: {
-        id: favorite.id,
-      },
-    });
-  }
-
-  async getUserFavorites(userId: string) {
     return this.prisma.favorite.findMany({
-      where: {
-        userId,
-      },
-      include: {
-        song: true,
-      },
-    });
+      where: { userId: this.defaultUserId },
+      include: { song: true },
+      orderBy: { createdAt: 'desc' },
+    }) as unknown as Favorite[];
   }
 
-  async checkFavorite(userId: string, songId: string) {
-    const favorite = await this.prisma.favorite.findFirst({
+  // Toggle a favorite (add if doesn't exist, remove if it does)
+  async toggle(toggleFavoriteDto: ToggleFavoriteDto): Promise<Favorite | null> {
+    const { songId } = toggleFavoriteDto;
+
+    // Make sure our demo user exists
+    await this.ensureUserExists();
+
+    // Check if the song exists
+    const song = await this.prisma.song.findUnique({
+      where: { id: songId },
+    });
+
+    if (!song) {
+      throw new HttpException('Song not found', HttpStatus.NOT_FOUND);
+    }
+
+    // Check if the favorite already exists
+    const existingFavorite = await this.prisma.favorite.findUnique({
       where: {
-        userId,
-        songId,
+        songId_userId: {
+          songId,
+          userId: this.defaultUserId,
+        },
       },
     });
 
-    return { isFavorite: !!favorite };
+    // If it exists, delete it
+    if (existingFavorite) {
+      await this.prisma.favorite.delete({
+        where: { id: existingFavorite.id },
+      });
+      return null;
+    }
+
+    // If it doesn't exist, create it
+    return this.prisma.favorite.create({
+      data: {
+        songId,
+        userId: this.defaultUserId,
+      },
+      include: { song: true },
+    }) as unknown as Favorite;
+  }
+
+  // Check if a song is favorited by the user
+  async checkFavorite(songId: string): Promise<boolean> {
+    // Make sure our demo user exists
+    await this.ensureUserExists();
+
+    const favorite = await this.prisma.favorite.findUnique({
+      where: {
+        songId_userId: {
+          songId,
+          userId: this.defaultUserId,
+        },
+      },
+    });
+
+    return !!favorite;
+  }
+
+  // Ensure the default user exists
+  private async ensureUserExists(): Promise<void> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: this.defaultUserId },
+    });
+
+    if (!user) {
+      await this.prisma.user.create({
+        data: {
+          id: this.defaultUserId,
+          email: 'demo@example.com',
+          name: 'Demo User',
+        },
+      });
+    }
   }
 }
