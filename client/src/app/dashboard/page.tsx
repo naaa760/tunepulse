@@ -7,6 +7,7 @@ import { getSongs } from "@/lib/songService";
 import { Song } from "@/types/Song";
 import styles from "./dashboard.module.css";
 import Link from "next/link";
+import { MdFavorite, MdSearch, MdMusicNote } from "react-icons/md";
 
 export default function Dashboard() {
   const [songs, setSongs] = useState<Song[]>([]);
@@ -36,19 +37,53 @@ export default function Dashboard() {
   };
 
   return (
-    <div className={styles.dashboard}>
-      <h1>Music Dashboard</h1>
-      <div className={styles.actions}>
-        <SongSearch onSearch={handleSearch} />
-        <Link href="/favorites" className={styles.favoritesButton}>
-          View Favorites
-        </Link>
+    <div className={styles.dashboardContainer}>
+      <div className={styles.dashboardContent}>
+        <div className={styles.header}>
+          <h1>
+            <MdMusicNote className={styles.icon} /> TunePulse
+          </h1>
+          <p className={styles.subtitle}>
+            Discover and enjoy your favorite music
+          </p>
+        </div>
+
+        <div className={styles.actions}>
+          <SongSearch onSearch={handleSearch} />
+          <Link href="/favorites" className={styles.favoritesButton}>
+            <MdFavorite className={styles.buttonIcon} />
+            <span>My Favorites</span>
+          </Link>
+        </div>
+
+        {loading && (
+          <div className={styles.loadingContainer}>
+            <div className={styles.loadingSpinner}></div>
+            <p>Loading amazing music...</p>
+          </div>
+        )}
+
+        {error && (
+          <div className={styles.errorContainer}>
+            <div className={styles.errorIcon}>!</div>
+            <p>{error}</p>
+          </div>
+        )}
+
+        {!loading && !error && songs.length === 0 && (
+          <div className={styles.emptyState}>
+            <MdSearch className={styles.emptyIcon} />
+            <h2>No songs found</h2>
+            <p>Try searching for something else or check back later</p>
+          </div>
+        )}
+
+        {!loading && !error && songs.length > 0 && (
+          <div className={styles.songListContainer}>
+            <SongList songs={songs} />
+          </div>
+        )}
       </div>
-
-      {loading && <div className={styles.loading}>Loading songs...</div>}
-      {error && <div className={styles.error}>{error}</div>}
-
-      <SongList songs={songs} />
     </div>
   );
 }
