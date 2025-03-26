@@ -6,6 +6,7 @@ import SongSearch from "@/components/Songs/SongSearch";
 import { getSongs } from "@/lib/songService";
 import { Song } from "@/types/Song";
 import styles from "./dashboard.module.css";
+import Link from "next/link";
 
 export default function Dashboard() {
   const [songs, setSongs] = useState<Song[]>([]);
@@ -37,7 +38,12 @@ export default function Dashboard() {
   return (
     <div className={styles.dashboard}>
       <h1>Music Dashboard</h1>
-      <SongSearch onSearch={handleSearch} />
+      <div className={styles.actions}>
+        <SongSearch onSearch={handleSearch} />
+        <Link href="/favorites" className={styles.favoritesButton}>
+          View Favorites
+        </Link>
+      </div>
 
       {loading && <div className={styles.loading}>Loading songs...</div>}
       {error && <div className={styles.error}>{error}</div>}

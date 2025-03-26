@@ -4,6 +4,29 @@
   padding: 2rem;
 }
 
+.actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.favoritesButton {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  background-color: #1db954;
+  color: white;
+  text-decoration: none;
+  border-radius: 30px;
+  font-weight: bold;
+  transition: all 0.2s;
+}
+
+.favoritesButton:hover {
+  background-color: #1ed760;
+  transform: translateY(-2px);
+}
+
 .loading {
   text-align: center;
   padding: 2rem;
