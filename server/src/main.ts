@@ -9,10 +9,10 @@ async function bootstrap() {
 
   // Enable CORS for frontend
   app.enableCors({
-    origin: ["https://tunepulse-x6q3.vercel.app", "http://localhost:3000"],
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+    origin: true, // Allow all origins in development
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
     credentials: true,
-    allowedHeaders: ["Content-Type", "Authorization"],
+    allowedHeaders: "Content-Type, Accept, Authorization",
   });
 
   // Set global prefix for all routes

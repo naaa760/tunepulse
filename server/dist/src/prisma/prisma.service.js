@@ -16,7 +16,9 @@ const client_1 = require("@prisma/client");
 let PrismaService = PrismaService_1 = class PrismaService extends client_1.PrismaClient {
     logger = new common_1.Logger(PrismaService_1.name);
     constructor() {
-        super();
+        super({
+            log: ["query", "info", "warn", "error"],
+        });
     }
     async onModuleInit() {
         try {

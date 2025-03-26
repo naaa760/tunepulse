@@ -26,11 +26,17 @@ let SongsController = SongsController_1 = class SongsController {
     async findAll() {
         return this.songsService.findAll();
     }
-    async search(query) {
-        this.logger.log(`Received search request for: ${query}`);
-        const results = await this.songsService.search(query);
-        this.logger.log(`Returning ${results.length} search results`);
-        return results;
+    async searchSongs(query) {
+        this.logger.log(`Searching for songs with query: ${query}`);
+        try {
+            const songs = await this.songsService.searchSongs(query);
+            this.logger.log(`Found ${songs.length} songs for query: ${query}`);
+            return songs;
+        }
+        catch (error) {
+            this.logger.error(`Error searching songs: ${error.message}`, error.stack);
+            throw new common_1.InternalServerErrorException("Failed to search songs");
+        }
     }
     async findOne(id) {
         try {
@@ -53,11 +59,11 @@ __decorate([
 ], SongsController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Get)("search"),
-    __param(0, (0, common_1.Query)("q")),
+    __param(0, (0, common_1.Query)("query")),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
-], SongsController.prototype, "search", null);
+], SongsController.prototype, "searchSongs", null);
 __decorate([
     (0, common_1.Get)(":id"),
     __param(0, (0, common_1.Param)("id", common_1.ParseIntPipe)),

@@ -5,6 +5,7 @@ import {
   Query,
   ParseIntPipe,
   NotFoundException,
+  InternalServerErrorException,
 } from "@nestjs/common";
 import { SongsService } from "./songs.service";
 import { Song } from "./song.entity";
@@ -22,11 +23,16 @@ export class SongsController {
   }
 
   @Get("search")
-  async search(@Query("q") query: string): Promise<Song[]> {
-    this.logger.log(`Received search request for: ${query}`);
-    const results = await this.songsService.search(query);
-    this.logger.log(`Returning ${results.length} search results`);
-    return results;
+  async searchSongs(@Query("query") query: string) {
+    this.logger.log(`Searching for songs with query: ${query}`);
+    try {
+      const songs = await this.songsService.searchSongs(query);
+      this.logger.log(`Found ${songs.length} songs for query: ${query}`);
+      return songs;
+    } catch (error) {
+      this.logger.error(`Error searching songs: ${error.message}`, error.stack);
+      throw new InternalServerErrorException("Failed to search songs");
+    }
   }
 
   @Get(":id")

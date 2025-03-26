@@ -8,10 +8,10 @@ async function bootstrap() {
     const logger = new common_2.Logger("Bootstrap");
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
     app.enableCors({
-        origin: ["https://tunepulse-x6q3.vercel.app", "http://localhost:3000"],
-        methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+        origin: true,
+        methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
         credentials: true,
-        allowedHeaders: ["Content-Type", "Authorization"],
+        allowedHeaders: "Content-Type, Accept, Authorization",
     });
     app.useGlobalPipes(new common_1.ValidationPipe());
     const port = process.env.PORT || 4000;

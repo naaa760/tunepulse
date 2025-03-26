@@ -27,22 +27,29 @@ export default function DashboardPage() {
   ];
 
   useEffect(() => {
+    const loadSongsByCategory = async (categoryName: string) => {
+      setIsLoading(true);
+      try {
+        const data = await searchSongs(categoryName);
+        if (data && data.length > 0) {
+          setSongs(data);
+          setError(null);
+        } else {
+          // Handle empty results
+          setSongs([]);
+          setError("No songs found. Try a different category.");
+          console.log("No songs found for category:", categoryName);
+        }
+      } catch (err) {
+        console.error("Error loading songs:", err);
+        setError("Failed to load songs. Please try again later.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
     loadSongsByCategory(category);
   }, [category]);
-
-  const loadSongsByCategory = async (categoryName: string) => {
-    setIsLoading(true);
-    try {
-      const data = await searchSongs(categoryName);
-      setSongs(data);
-      setError(null);
-    } catch (err) {
-      setError("Failed to load songs. Please try again later.");
-      console.error(err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const handleSearch = async (query: string) => {
     setSearchQuery(query);

@@ -14,7 +14,9 @@ export class PrismaService
   private readonly logger = new Logger(PrismaService.name);
 
   constructor() {
-    super();
+    super({
+      log: ["query", "info", "warn", "error"],
+    });
   }
 
   async onModuleInit() {

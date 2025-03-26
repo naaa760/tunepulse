@@ -13,6 +13,8 @@ const prisma_module_1 = require("./prisma/prisma.module");
 const spotify_module_1 = require("./spotify/spotify.module");
 const songs_module_1 = require("./songs/songs.module");
 const favorites_module_1 = require("./favorites/favorites.module");
+const app_controller_1 = require("./app.controller");
+const app_service_1 = require("./app.service");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -27,6 +29,8 @@ exports.AppModule = AppModule = __decorate([
             songs_module_1.SongsModule,
             favorites_module_1.FavoritesModule,
         ],
+        controllers: [app_controller_1.AppController],
+        providers: [app_service_1.AppService],
     })
 ], AppModule);
 //# sourceMappingURL=app.module.js.map
