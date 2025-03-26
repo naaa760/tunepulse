@@ -6,12 +6,7 @@ async function bootstrap() {
 
   // Fix CORS issues
   app.enableCors({
-    origin: [
-      'http://localhost:4000',
-      'https://tunepulse-pfzr.vercel.app',
-      'https://tunepulse-ten.vercel.app',
-      'https://tunepulse-backend.onrender.com',
-    ],
+    origin: '*', // Allow all origins temporarily to debug
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     allowedHeaders: 'Content-Type, Accept, Authorization',
     credentials: true,
