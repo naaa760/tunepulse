@@ -6,12 +6,14 @@ async function bootstrap() {
 
   // Enable CORS
   app.enableCors({
-    origin: ['http://localhost:3000', 'http://localhost:3001'],
+    origin: ['*'],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });
 
-  await app.listen(4000);
-  console.log('Application is running on: http://localhost:4000');
+  // Use the PORT environment variable provided by Render
+  const port = process.env.PORT || 4000;
+  await app.listen(port);
+  console.log(`Application is running on port: ${port}`);
 }
 bootstrap();
