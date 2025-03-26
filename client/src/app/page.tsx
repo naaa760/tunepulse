@@ -64,6 +64,9 @@ export default function Home() {
       </div>
 
       <div className={styles.heroSection}>
+        <div className={styles.heroImageContainer}>
+          <img src="/mic.png" alt="Microphone" className={styles.heroImage} />
+        </div>
         <h1 className={styles.heroTitle}>
           The answer <span className={styles.highlight}>to your</span>
           <br />
@@ -173,6 +176,78 @@ export default function Home() {
             <Link href="/dashboard" className={styles.featureLink}>
               Learn more <span>→</span>
             </Link>
+          </div>
+        </div>
+      </section>
+
+      <section className={styles.showcaseSection}>
+        <div className={styles.showcaseSectionHeading}>
+          <h2>CASE STUDIES</h2>
+          <h3>
+            Music Discovery{" "}
+            <span className={styles.highlight}>Success Stories</span>
+          </h3>
+          <p>
+            See how TunePulse has transformed the way people discover and
+            experience music
+          </p>
+        </div>
+
+        <div className={styles.showcaseGrid}>
+          <div className={styles.showcaseCard}>
+            <div className={styles.showcaseImage}>
+              <img src="/showcase1.jpg" alt="Showcase" />
+              <div className={styles.showcaseOverlay}>
+                <span className={styles.showcaseTag}>CASE STUDY</span>
+              </div>
+            </div>
+            <div className={styles.showcaseContent}>
+              <h3>Personalization for Music Enthusiasts</h3>
+              <p>
+                How TunePulse helped a music lover discover 200+ new artists
+              </p>
+              <div className={styles.showcaseStats}>
+                <div className={styles.showcaseStat}>
+                  <span className={styles.showcaseStatValue}>40%</span>
+                  <span className={styles.showcaseStatLabel}>
+                    Increase in music discovery
+                  </span>
+                </div>
+                <div className={styles.showcaseStat}>
+                  <span className={styles.showcaseStatValue}>70%</span>
+                  <span className={styles.showcaseStatLabel}>
+                    More diverse genres
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className={styles.showcaseCard}>
+            <div className={styles.showcaseImage}>
+              <img src="/showcase2.jpg" alt="Showcase" />
+              <div className={styles.showcaseOverlay}>
+                <span className={styles.showcaseTag}>SUCCESS STORY</span>
+              </div>
+            </div>
+            <div className={styles.showcaseContent}>
+              <h3>Streamlined Music Organization</h3>
+              <p>Professional DJ creates perfect playlists in record time</p>
+              <div className={styles.showcaseStats}>
+                <div className={styles.showcaseStat}>
+                  <span className={styles.showcaseStatValue}>60%</span>
+                  <span className={styles.showcaseStatLabel}>
+                    Increase in efficiency
+                  </span>
+                </div>
+                <div className={styles.showcaseStat}>
+                  <span className={styles.showcaseStatValue}>#1</span>
+                  <span className={styles.showcaseStatLabel}>
+                    Rated for organization
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>

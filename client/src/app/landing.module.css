@@ -176,6 +176,27 @@
   align-items: center;
 }
 
+.heroImageContainer {
+  position: absolute;
+  right: -80px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
+  animation: float 6s ease-in-out infinite alternate;
+}
+
+.heroImage {
+  width: 340px;
+  height: auto;
+  filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.15));
+  transform: rotate(-5deg);
+  transition: all 0.5s ease;
+}
+
+.heroSection:hover .heroImage {
+  transform: rotate(-2deg) scale(1.03);
+}
+
 .heroTitle {
   font-size: 4.5rem;
   font-weight: 800;
@@ -423,6 +444,19 @@
   .floatingImage {
     display: none;
   }
+
+  .heroImageContainer {
+    position: relative;
+    right: auto;
+    top: auto;
+    transform: none;
+    margin: 2rem auto 3rem;
+    max-width: 260px;
+  }
+
+  .heroImage {
+    width: 100%;
+  }
 }
 
 @media (max-width: 900px) {
@@ -627,5 +661,159 @@
   }
   100% {
     transform: translate(-20px, 20px) rotate(-5deg);
+  }
+}
+
+.showcaseSection {
+  width: 100%;
+  max-width: 1200px;
+  padding: 5rem 2rem;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+}
+
+.showcaseSectionHeading {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.showcaseSectionHeading h2 {
+  color: #ff6347;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+
+.showcaseSectionHeading h3 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+.showcaseSectionHeading p {
+  color: rgba(51, 51, 51, 0.7);
+  max-width: 600px;
+  margin: 0 auto;
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+.showcaseGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+  gap: 3rem;
+}
+
+.showcaseCard {
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+  transition: all 0.4s ease;
+  transform: translateY(0);
+}
+
+.showcaseCard:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+}
+
+.showcaseImage {
+  position: relative;
+  height: 240px;
+  overflow: hidden;
+}
+
+.showcaseImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.8s ease;
+}
+
+.showcaseCard:hover .showcaseImage img {
+  transform: scale(1.05);
+}
+
+.showcaseOverlay {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  z-index: 1;
+}
+
+.showcaseTag {
+  display: inline-block;
+  background: #ff6347;
+  color: white;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+}
+
+.showcaseContent {
+  padding: 2rem;
+}
+
+.showcaseContent h3 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.showcaseContent p {
+  color: rgba(51, 51, 51, 0.7);
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+.showcaseStats {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.showcaseStat {
+  display: flex;
+  flex-direction: column;
+}
+
+.showcaseStatValue {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #ff6347;
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+
+.showcaseStatLabel {
+  font-size: 0.9rem;
+  color: rgba(51, 51, 51, 0.6);
+}
+
+@media (max-width: 768px) {
+  .showcaseGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .showcaseSectionHeading h3 {
+    font-size: 2rem;
+  }
+}
+
+/* Add responsive adjustments */
+@media (max-width: 768px) {
+  .heroImageContainer {
+    max-width: 200px;
+    margin: 1rem auto 2rem;
   }
 }
