@@ -5,6 +5,6 @@ export declare class SongsController {
     private readonly logger;
     constructor(songsService: SongsService);
     findAll(): Promise<Song[]>;
-    searchSongs(query: string): Promise<any>;
+    searchSongs(query: string): Promise<Song[]>;
     findOne(id: number): Promise<Song>;
 }

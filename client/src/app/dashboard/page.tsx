@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import SongList from "../../components/Songs/SongList";
 import SongSearch from "../../components/Songs/SongSearch";
@@ -26,30 +26,31 @@ export default function DashboardPage() {
     "Classical",
   ];
 
-  useEffect(() => {
-    const loadSongsByCategory = async (categoryName: string) => {
-      setIsLoading(true);
-      try {
-        const data = await searchSongs(categoryName);
-        if (data && data.length > 0) {
-          setSongs(data);
-          setError(null);
-        } else {
-          // Handle empty results
-          setSongs([]);
-          setError("No songs found. Try a different category.");
-          console.log("No songs found for category:", categoryName);
-        }
-      } catch (err) {
-        console.error("Error loading songs:", err);
-        setError("Failed to load songs. Please try again later.");
-      } finally {
-        setIsLoading(false);
+  // Define loadSongsByCategory outside of useEffect so it can be used elsewhere
+  const loadSongsByCategory = useCallback(async (categoryName: string) => {
+    setIsLoading(true);
+    try {
+      const data = await searchSongs(categoryName);
+      if (data && data.length > 0) {
+        setSongs(data);
+        setError(null);
+      } else {
+        // Handle empty results
+        setSongs([]);
+        setError("No songs found. Try a different category.");
+        console.log("No songs found for category:", categoryName);
       }
-    };
+    } catch (err) {
+      console.error("Error loading songs:", err);
+      setError("Failed to load songs. Please try again later.");
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
+  useEffect(() => {
     loadSongsByCategory(category);
-  }, [category]);
+  }, [category, loadSongsByCategory]);
 
   const handleSearch = async (query: string) => {
     setSearchQuery(query);

@@ -112,4 +112,58 @@ export class SongsService {
       throw error;
     }
   }
+
+  async searchSongs(query: string): Promise<Song[]> {
+    this.logger.log(`Searching for songs with query: ${query}`);
+
+    try {
+      // First, try to find songs in the database
+      const dbSongs = await this.prisma.song.findMany({
+        where: {
+          OR: [
+            { title: { contains: query, mode: "insensitive" } },
+            { artist: { contains: query, mode: "insensitive" } },
+            { album: { contains: query, mode: "insensitive" } },
+          ],
+        },
+      });
+
+      // If we found songs in the database, return them
+      if (dbSongs.length > 0) {
+        this.logger.log(
+          `Found ${dbSongs.length} songs in database for query: ${query}`
+        );
+        return dbSongs;
+      }
+
+      // Otherwise, search Spotify
+      this.logger.log(
+        `No songs found in database, searching Spotify for: ${query}`
+      );
+      const spotifyTracks = await this.spotifyService.searchTracks(query);
+
+      // Map Spotify tracks to our Song entity format
+      const songs = spotifyTracks.map((track) => ({
+        id: null, // This will be assigned by the database
+        title: track.name,
+        artist: track.artists?.[0]?.name || "Unknown Artist",
+        album: track.album?.name || "Unknown Album",
+        releaseYear: track.album?.release_date
+          ? new Date(track.album.release_date).getFullYear()
+          : null,
+        duration: track.duration_ms,
+        imageUrl: track.album?.images?.[0]?.url || null,
+        popularity: track.popularity || 0,
+        spotifyId: track.id,
+      }));
+
+      this.logger.log(
+        `Found ${songs.length} songs on Spotify for query: ${query}`
+      );
+      return songs;
+    } catch (error) {
+      this.logger.error(`Error searching songs: ${error.message}`, error.stack);
+      return [];
+    }
+  }
 }

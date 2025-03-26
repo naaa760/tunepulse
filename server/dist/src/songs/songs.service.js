@@ -106,6 +106,45 @@ let SongsService = SongsService_1 = class SongsService {
             throw error;
         }
     }
+    async searchSongs(query) {
+        this.logger.log(`Searching for songs with query: ${query}`);
+        try {
+            const dbSongs = await this.prisma.song.findMany({
+                where: {
+                    OR: [
+                        { title: { contains: query, mode: "insensitive" } },
+                        { artist: { contains: query, mode: "insensitive" } },
+                        { album: { contains: query, mode: "insensitive" } },
+                    ],
+                },
+            });
+            if (dbSongs.length > 0) {
+                this.logger.log(`Found ${dbSongs.length} songs in database for query: ${query}`);
+                return dbSongs;
+            }
+            this.logger.log(`No songs found in database, searching Spotify for: ${query}`);
+            const spotifyTracks = await this.spotifyService.searchTracks(query);
+            const songs = spotifyTracks.map((track) => ({
+                id: null,
+                title: track.name,
+                artist: track.artists?.[0]?.name || "Unknown Artist",
+                album: track.album?.name || "Unknown Album",
+                releaseYear: track.album?.release_date
+                    ? new Date(track.album.release_date).getFullYear()
+                    : null,
+                duration: track.duration_ms,
+                imageUrl: track.album?.images?.[0]?.url || null,
+                popularity: track.popularity || 0,
+                spotifyId: track.id,
+            }));
+            this.logger.log(`Found ${songs.length} songs on Spotify for query: ${query}`);
+            return songs;
+        }
+        catch (error) {
+            this.logger.error(`Error searching songs: ${error.message}`, error.stack);
+            return [];
+        }
+    }
 };
 exports.SongsService = SongsService;
 exports.SongsService = SongsService = SongsService_1 = __decorate([

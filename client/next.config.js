@@ -3,8 +3,7 @@ const nextConfig = {
   images: {
     domains: ["i.scdn.co"], // Allow images from Spotify CDN
   },
-  // Add this to disable font optimization if it's causing issues
-  optimizeFonts: false,
+  // Remove optimizeFonts as it's not recognized
   async rewrites() {
     return [
       {

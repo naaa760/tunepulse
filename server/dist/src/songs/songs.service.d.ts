@@ -9,4 +9,5 @@ export declare class SongsService {
     findAll(): Promise<Song[]>;
     search(query: string): Promise<Song[]>;
     findOne(id: number): Promise<Song>;
+    searchSongs(query: string): Promise<Song[]>;
 }
