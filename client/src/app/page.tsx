@@ -196,7 +196,11 @@ export default function Home() {
         <div className={styles.showcaseGrid}>
           <div className={styles.showcaseCard}>
             <div className={styles.showcaseImage}>
-              <img src="/showcase1.jpg" alt="Showcase" />
+              <img
+                src="/cr1.webp"
+                alt="Music discovery analytics"
+                className={styles.showcaseImg}
+              />
               <div className={styles.showcaseOverlay}>
                 <span className={styles.showcaseTag}>CASE STUDY</span>
               </div>
@@ -225,7 +229,11 @@ export default function Home() {
 
           <div className={styles.showcaseCard}>
             <div className={styles.showcaseImage}>
-              <img src="/showcase2.jpg" alt="Showcase" />
+              <img
+                src="/cr2.webp"
+                alt="Music organization interface"
+                className={styles.showcaseImg}
+              />
               <div className={styles.showcaseOverlay}>
                 <span className={styles.showcaseTag}>SUCCESS STORY</span>
               </div>

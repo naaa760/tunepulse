@@ -817,3 +817,15 @@
     margin: 1rem auto 2rem;
   }
 }
+
+.showcaseImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.8s ease;
+  object-position: center;
+}
+
+.showcaseCard:hover .showcaseImg {
+  transform: scale(1.05);
+}
