@@ -6,7 +6,6 @@ import { FaMusic, FaSpotify, FaHeadphones, FaHeart } from "react-icons/fa";
 import React from "react";
 
 export default function Home() {
-  // Add this useEffect to handle scroll animation
   React.useEffect(() => {
     const handleScroll = () => {
       const scrolledPercentage =

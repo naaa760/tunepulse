@@ -59,9 +59,7 @@ export class SongsService {
     return song as unknown as Song;
   }
 
-  // Search for songs
   async search(query: string): Promise<Song[]> {
-    // First check our database for matching songs
     const localSongs = await this.prisma.song.findMany({
       where: {
         OR: [
@@ -160,14 +158,12 @@ export class SongsService {
   }
 
   async createSampleSongs(): Promise<void> {
-    // Check if we already have songs
     const existingSongs = await this.prisma.song.count();
 
     if (existingSongs > 0) {
-      return; // Don't add samples if we already have songs
+      return;
     }
 
-    // Sample songs
     const sampleSongs = [
       {
         spotifyId: 'sample1',
