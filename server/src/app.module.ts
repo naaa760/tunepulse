@@ -9,7 +9,9 @@ import { SpotifyModule } from './spotify/spotify.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     PrismaModule,
     SongsModule,
     FavoritesModule,

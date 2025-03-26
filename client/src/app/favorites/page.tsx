@@ -17,7 +17,10 @@ export default function Favorites() {
     const fetchFavorites = async () => {
       try {
         const data = await getUserFavorites(userId);
-        setFavorites(data.map((fav: any) => fav.song));
+        interface FavoriteResponse {
+          song: Song;
+        }
+        setFavorites(data.map((fav: FavoriteResponse) => fav.song));
       } catch (error) {
         console.error("Failed to fetch favorites:", error);
       } finally {
@@ -32,7 +35,7 @@ export default function Favorites() {
     <div className="container mx-auto px-4 py-8">
       <div className="flex items-center gap-4 mb-8">
         <Link href="/dashboard">
-          <Button variant="ghost" size="icon">
+          <Button variant="ghost" size="sm">
             <ArrowLeft className="w-5 h-5" />
           </Button>
         </Link>

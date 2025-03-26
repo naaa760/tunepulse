@@ -5,6 +5,7 @@ import { Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { addFavorite, removeFavorite, checkFavorite } from "@/services/api";
 import { Song } from "@/types";
+import Image from "next/image";
 
 interface SongListProps {
   songs: Song[];
@@ -26,8 +27,8 @@ export default function SongList({ songs, userId }: SongListProps) {
         try {
           const { isFavorite } = await checkFavorite(userId, song.spotifyId);
           favoriteStatus[song.spotifyId] = isFavorite;
-        } catch (error) {
-          console.error(`Failed to check favorite status for song:`, song);
+        } catch (err) {
+          console.error(`Failed to check favorite status for song:`, song, err);
           favoriteStatus[song.spotifyId] = false;
         }
       }
@@ -87,10 +88,11 @@ export default function SongList({ songs, userId }: SongListProps) {
           <div className="relative h-48 w-full">
             {song.coverImage ? (
               <div className="relative h-48 w-full">
-                <img
+                <Image
                   src={song.coverImage}
                   alt={`${song.title} cover`}
-                  className="w-full h-full object-cover"
+                  fill
+                  className="object-cover"
                 />
               </div>
             ) : (

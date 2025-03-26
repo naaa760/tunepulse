@@ -1,38 +1,21 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Input } from "@/components/ui/input";
+
 import { Button } from "@/components/ui/button";
-import { Heart, Search } from "lucide-react";
+import { Heart } from "lucide-react";
 import Link from "next/link";
-import { fetchTopTracks, searchSongs, getUserFavorites } from "@/services/api";
+import { fetchTopTracks, searchSongs } from "@/services/api";
 import SongList from "@/components/SongList";
 import SearchBar from "@/components/SearchBar";
 import { Song } from "@/types";
 
-// Define types
-interface Song {
-  id: number;
-  title: string;
-  artist: string;
-  album: string | null;
-  duration: number;
-  imageUrl: string | null;
-  audioUrl: string | null;
-}
-
 export default function Dashboard() {
   const [songs, setSongs] = useState<Song[]>([]);
-  const [favorites, setFavorites] = useState<number[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [isSearching, setIsSearching] = useState(false);
-
-  // Default user ID for demo purposes
   const userId = "user-1";
-
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
   useEffect(() => {
     const loadTopTracks = async () => {
@@ -40,8 +23,8 @@ export default function Dashboard() {
         setIsLoading(true);
         const data = await fetchTopTracks();
         setSongs(data);
-      } catch (error) {
-        console.error("Failed to fetch top tracks:", error);
+      } catch (err) {
+        console.error("Failed to fetch top tracks:", err);
       } finally {
         setIsLoading(false);
       }
@@ -65,55 +48,11 @@ export default function Dashboard() {
       setIsSearching(true);
       const results = await searchSongs(query);
       setSongs(results);
-    } catch (error) {
-      console.error("Search failed:", error);
+    } catch (err) {
+      console.error("Search failed:", err);
     } finally {
       setIsSearching(false);
     }
-  };
-
-  useEffect(() => {
-    const fetchFavorites = async () => {
-      try {
-        const data = await getUserFavorites(userId);
-        setFavorites(data.map((fav) => fav.songId));
-      } catch (error) {
-        console.error("Failed to fetch favorites:", error);
-      }
-    };
-
-    fetchFavorites();
-  }, [userId]);
-
-  const toggleFavorite = async (songId: number) => {
-    try {
-      if (favorites.includes(songId)) {
-        // Remove from favorites
-        await fetch(`${apiUrl}/favorites/${userId}/${songId}`, {
-          method: "DELETE",
-        });
-        setFavorites(favorites.filter((id) => id !== songId));
-      } else {
-        // Add to favorites
-        await fetch(`${apiUrl}/favorites`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ userId, songId }),
-        });
-        setFavorites([...favorites, songId]);
-      }
-    } catch (err) {
-      console.error("Error updating favorites:", err);
-    }
-  };
-
-  // Format duration from seconds to mm:ss
-  const formatDuration = (seconds: number) => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
   };
 
   return (

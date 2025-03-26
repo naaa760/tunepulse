@@ -6,8 +6,8 @@ import { SpotifyTrackDto } from '../spotify/dto/spotify-track.dto';
 @Injectable()
 export class SongsService {
   constructor(
-    private prisma: PrismaService,
-    private spotifyService: SpotifyService,
+    private readonly spotifyService: SpotifyService,
+    private readonly prisma: PrismaService,
   ) {}
 
   async findAll() {
@@ -46,35 +46,15 @@ export class SongsService {
     return spotifyResults;
   }
 
-  async getTopTracks(): Promise<SpotifyTrackDto[]> {
+  async getTopTracks() {
     try {
-      const spotifyResults = await this.spotifyService.getTopTracks();
-
-      // Store songs in our database if they don't exist
-      for (const song of spotifyResults) {
-        try {
-          await this.prisma.song.upsert({
-            where: { spotifyId: song.spotifyId },
-            update: {},
-            create: {
-              spotifyId: song.spotifyId,
-              title: song.title,
-              artist: song.artist,
-              album: song.album,
-              coverImage: song.coverImage,
-              previewUrl: song.previewUrl,
-            },
-          });
-        } catch (dbError) {
-          console.error('Error storing song in database:', dbError);
-          // Continue with next song
-        }
-      }
-
-      return spotifyResults;
+      console.log('Fetching top tracks from Spotify service...');
+      const tracks = await this.spotifyService.getTopTracks();
+      console.log(`Received ${tracks.length} tracks from Spotify`);
+      return tracks;
     } catch (error) {
       console.error('Error in getTopTracks:', error);
-      return [];
+      throw error;
     }
   }
 }

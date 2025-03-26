@@ -26,12 +26,12 @@ export class SongsController {
   @Get('top-tracks')
   async getTopTracks() {
     try {
-      console.log('Fetching top tracks...');
+      console.log('Getting top tracks from Spotify...');
       const result = await this.songsService.getTopTracks();
       console.log(`Found ${result.length} top tracks`);
       return result;
     } catch (error) {
-      console.error('Error in getTopTracks controller:', error);
+      console.error('Error getting top tracks:', error);
       throw error;
     }
   }

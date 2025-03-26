@@ -1,6 +1,8 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:4000";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+
+console.log("API URL:", API_URL);
 
 const axiosInstance = axios.create({
   baseURL: API_URL,
@@ -11,12 +13,15 @@ const axiosInstance = axios.create({
 
 export const fetchTopTracks = async () => {
   try {
-    const response = await axiosInstance.get("/songs/top-tracks");
-    console.log("API response for top tracks:", response.data);
+    const url = "/songs/top-tracks";
+    console.log("Fetching top tracks from:", `${API_URL}${url}`);
+
+    const response = await axiosInstance.get(url);
+    console.log("Top tracks response:", response.data);
     return response.data;
   } catch (error) {
     console.error("Error fetching top tracks:", error);
-    throw error;
+    return [];
   }
 };
 
