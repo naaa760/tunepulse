@@ -16,10 +16,12 @@ export default function Home() {
       );
 
       // Activate animations when scrolled enough
-      const floatingImage = document.querySelector(`.${styles.floatingImage}`);
+      const floatingImage = document.querySelector(
+        `.${styles.floatingImage}`
+      ) as HTMLElement | null;
       const secondFloatingImage = document.querySelector(
         `.${styles.secondFloatingImage}`
-      );
+      ) as HTMLElement | null;
 
       if (floatingImage && window.scrollY > 100) {
         floatingImage.style.animationPlayState = "running";

@@ -14,7 +14,10 @@ export const test = base.extend({
         try {
           return await originalClick.call(locator, options);
         } catch (error) {
-          if (error.message.includes("strict mode violation")) {
+          if (
+            error instanceof Error &&
+            error.message.includes("strict mode violation")
+          ) {
             console.log(
               `Handling strict mode error by using first() on ${selector}`
             );

@@ -7,7 +7,8 @@ export const test = base.extend({
     page.setDefaultTimeout(15000);
 
     // Add a method to navigate with Next.js
-    page.navigateNextJs = async (selector) => {
+    const originalPage = page as any;
+    originalPage.navigateNextJs = async (selector: string) => {
       const element = page.locator(selector).first();
       await element.click();
       await page.waitForTimeout(1000);
