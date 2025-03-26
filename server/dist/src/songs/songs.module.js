@@ -10,16 +10,16 @@ exports.SongsModule = void 0;
 const common_1 = require("@nestjs/common");
 const songs_controller_1 = require("./songs.controller");
 const songs_service_1 = require("./songs.service");
-const prisma_service_1 = require("../prisma/prisma.service");
+const prisma_module_1 = require("../prisma/prisma.module");
 const spotify_module_1 = require("../spotify/spotify.module");
 let SongsModule = class SongsModule {
 };
 exports.SongsModule = SongsModule;
 exports.SongsModule = SongsModule = __decorate([
     (0, common_1.Module)({
-        imports: [spotify_module_1.SpotifyModule],
+        imports: [prisma_module_1.PrismaModule, spotify_module_1.SpotifyModule],
         controllers: [songs_controller_1.SongsController],
-        providers: [songs_service_1.SongsService, prisma_service_1.PrismaService],
+        providers: [songs_service_1.SongsService],
         exports: [songs_service_1.SongsService],
     })
 ], SongsModule);

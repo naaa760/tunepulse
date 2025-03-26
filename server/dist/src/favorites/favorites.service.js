@@ -8,88 +8,99 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var FavoritesService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FavoritesService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
-let FavoritesService = class FavoritesService {
+let FavoritesService = FavoritesService_1 = class FavoritesService {
     prisma;
+    logger = new common_1.Logger(FavoritesService_1.name);
     constructor(prisma) {
         this.prisma = prisma;
     }
-    async findAll() {
+    async findAll(userId) {
         try {
-            const favorites = (await this.prisma.favorite.findMany({
-                include: {
-                    song: true,
-                },
-            }));
-            return favorites;
-        }
-        catch (error) {
-            console.error("Error fetching favorites:", error);
-            throw new Error("Failed to fetch favorites");
-        }
-    }
-    async findByUserId(userId) {
-        try {
-            return await this.prisma.favorite.findMany({
+            const favorites = await this.prisma.favorite.findMany({
                 where: { userId },
                 include: { song: true },
+                orderBy: { createdAt: "desc" },
             });
+            return favorites.map((favorite) => favorite.song);
         }
         catch (error) {
-            console.error("Error in findByUserId:", error);
-            throw new common_1.HttpException("Failed to fetch favorites", common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+            this.logger.error(`Error fetching favorites for user ${userId}`, error);
+            return [];
         }
     }
-    async toggleFavorite(createFavoriteDto) {
-        const { songId, userId } = createFavoriteDto;
+    async create(userId, createFavoriteDto) {
+        const { songId } = createFavoriteDto;
         try {
             const song = await this.prisma.song.findUnique({
                 where: { id: songId },
             });
             if (!song) {
-                throw new common_1.HttpException("Song not found", common_1.HttpStatus.NOT_FOUND);
+                throw new common_1.NotFoundException(`Song with ID ${songId} not found`);
             }
             const existingFavorite = await this.prisma.favorite.findFirst({
                 where: {
-                    songId,
                     userId,
-                },
-                include: {
-                    song: true,
+                    songId,
                 },
             });
             if (existingFavorite) {
-                await this.prisma.favorite.delete({
-                    where: {
-                        id: existingFavorite.id,
-                    },
-                });
-                return existingFavorite;
+                throw new common_1.ConflictException("Song is already in favorites");
             }
-            const newFavorite = await this.prisma.favorite.create({
+            return await this.prisma.favorite.create({
                 data: {
-                    songId,
                     userId,
-                },
-                include: {
-                    song: true,
+                    songId,
                 },
             });
-            return newFavorite;
         }
         catch (error) {
-            if (error instanceof common_1.HttpException) {
-                throw error;
+            this.logger.error(`Error creating favorite for user ${userId}, song ${songId}`, error);
+            throw error;
+        }
+    }
+    async remove(userId, songId) {
+        try {
+            const favorite = await this.prisma.favorite.findFirst({
+                where: {
+                    userId,
+                    songId,
+                },
+            });
+            if (!favorite) {
+                throw new common_1.NotFoundException(`Favorite not found for song ID ${songId}`);
             }
-            throw new common_1.HttpException("Failed to toggle favorite", common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+            await this.prisma.favorite.delete({
+                where: { id: favorite.id },
+            });
+        }
+        catch (error) {
+            this.logger.error(`Error removing favorite for user ${userId}, song ${songId}`, error);
+            throw error;
+        }
+    }
+    async checkIsFavorite(userId, songId) {
+        try {
+            const favorite = await this.prisma.favorite.findFirst({
+                where: {
+                    userId,
+                    songId,
+                },
+            });
+            return !!favorite;
+        }
+        catch (error) {
+            this.logger.error(`Error checking favorite status for user ${userId}, song ${songId}`, error);
+            return false;
         }
     }
 };
 exports.FavoritesService = FavoritesService;
-exports.FavoritesService = FavoritesService = __decorate([
+exports.FavoritesService = FavoritesService = FavoritesService_1 = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService])
 ], FavoritesService);

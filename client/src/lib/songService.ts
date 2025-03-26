@@ -1,46 +1,50 @@
 import { Song } from "../types/Song";
 
-export class SongService {
-  private baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
 
-  async getAllSongs(): Promise<Song[]> {
-    try {
-      const response = await fetch(`${this.baseUrl}/songs`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      if (!response.ok) {
-        throw new Error(`Failed to fetch songs: ${response.statusText}`);
-      }
-      return response.json();
-    } catch (error: unknown) {
-      console.error("Error fetching songs:", error);
-      throw new Error("Failed to load songs. Please try again.");
+export const fetchSongs = async (): Promise<Song[]> => {
+  try {
+    const response = await fetch(`${API_URL}/songs`);
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch songs");
     }
-  }
 
-  async searchSongs(query: string): Promise<Song[]> {
-    try {
-      const response = await fetch(
-        `${this.baseUrl}/songs/search?q=${encodeURIComponent(query)}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (!response.ok) {
-        throw new Error(`Search failed: ${response.statusText}`);
-      }
-      return response.json();
-    } catch (error: unknown) {
-      console.error("Error searching songs:", error);
-      throw new Error("Failed to search songs. Please try again.");
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching songs:", error);
+    return [];
+  }
+};
+
+export const searchSongs = async (query: string): Promise<Song[]> => {
+  try {
+    const response = await fetch(
+      `${API_URL}/songs/search?q=${encodeURIComponent(query)}`
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to search songs");
     }
-  }
-}
 
-export const songService = new SongService();
+    return await response.json();
+  } catch (error) {
+    console.error("Error searching songs:", error);
+    return [];
+  }
+};
+
+export const getSongById = async (id: number): Promise<Song | null> => {
+  try {
+    const response = await fetch(`${API_URL}/songs/${id}`);
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch song with id ${id}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error(`Error fetching song ${id}:`, error);
+    return null;
+  }
+};

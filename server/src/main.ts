@@ -1,58 +1,22 @@
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
 import { ValidationPipe } from "@nestjs/common";
-import { Request, Response } from "express";
 
 async function bootstrap() {
-  try {
-    const app = await NestFactory.create(AppModule, { cors: true });
+  const app = await NestFactory.create(AppModule);
 
-    app.useGlobalPipes(
-      new ValidationPipe({
-        transform: true,
-        whitelist: true,
-      })
-    );
+  // Enable CORS
+  app.enableCors({
+    origin: process.env.FRONTEND_URL || "http://localhost:3000",
+    credentials: true,
+  });
 
-    // Add proper CORS configuration
-    app.enableCors({
-      origin: true, // Allow requests from any origin in development
-      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-      allowedHeaders: ["Content-Type", "Authorization"],
-      credentials: true,
-    });
+  // Set global prefix for all routes
+  // app.setGlobalPrefix("api");
 
-    // Add CORS preflight handler
-    app.use((req: Request, res: Response, next: () => void) => {
-      res.header("Access-Control-Allow-Origin", "*");
-      res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS");
-      res.header(
-        "Access-Control-Allow-Headers",
-        "Content-Type, Accept, Authorization"
-      );
+  // Enable validation
+  app.useGlobalPipes(new ValidationPipe());
 
-      if (req.method === "OPTIONS") {
-        res.status(200).end();
-        return;
-      }
-
-      next();
-    });
-
-    // Add health check endpoint
-    app.use("/health-check", (req: Request, res: Response) => {
-      res
-        .status(200)
-        .json({ status: "ok", timestamp: new Date().toISOString() });
-    });
-
-    const port = process.env.PORT || 4000;
-
-    await app.listen(port, "0.0.0.0");
-    console.log(`Application is running on: http://localhost:${port}`);
-  } catch (error) {
-    console.error("Failed to start application:", error);
-    process.exit(1);
-  }
+  await app.listen(process.env.PORT || 4000);
 }
 bootstrap();

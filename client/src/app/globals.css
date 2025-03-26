@@ -120,9 +120,3 @@
     @apply bg-background text-foreground;
   }
 }
-
-@media (prefers-reduced-motion: no-preference) {
-  html {
-    scroll-behavior: smooth;
-  }
-}

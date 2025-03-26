@@ -1,28 +1,130 @@
-import { SongList } from "@/components/Songs/SongList";
+"use client";
+
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
+import SongList from "../../components/Songs/SongList";
+import SongSearch from "../../components/Songs/SongSearch";
+import { fetchSongs, searchSongs } from "../../lib/songService";
+import { Song } from "../../types/Song";
+import styles from "./dashboard.module.css";
 
 export default function DashboardPage() {
+  const [songs, setSongs] = useState<Song[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [category, setCategory] = useState<string>("Top Hits");
+
+  // List of music categories to choose from
+  const categories = [
+    "Top Hits",
+    "Rock Classics",
+    "Hip Hop",
+    "Pop",
+    "Electronic",
+    "Jazz",
+    "Classical",
+  ];
+
+  useEffect(() => {
+    loadSongsByCategory(category);
+  }, [category]);
+
+  const loadSongsByCategory = async (categoryName: string) => {
+    setIsLoading(true);
+    try {
+      const data = await searchSongs(categoryName);
+      setSongs(data);
+      setError(null);
+    } catch (err) {
+      setError("Failed to load songs. Please try again later.");
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSearch = async (query: string) => {
+    setSearchQuery(query);
+    setIsLoading(true);
+
+    try {
+      if (query.trim() === "") {
+        loadSongsByCategory(category);
+      } else {
+        const results = await searchSongs(query);
+        setSongs(results);
+      }
+      setError(null);
+    } catch (err) {
+      setError("Search failed. Please try again.");
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <main className="min-h-screen">
-      <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-extrabold text-white tracking-tight sm:text-5xl">
-            Your Music Dashboard
-          </h1>
-          <p className="mt-3 max-w-2xl mx-auto text-xl text-gray-300 sm:mt-4">
-            Discover, search, and enjoy your favorite music all in one place
-          </p>
+    <div className={styles.container}>
+      <nav className={styles.navbar}>
+        <div className={styles.logo}>
+          <span className={styles.logoIcon}>🎵</span>
+          <span className={styles.logoText}>Music App</span>
+        </div>
+        <div className={styles.navLinks}>
+          <Link href="/" className={styles.navLink}>
+            Home
+          </Link>
+          <Link
+            href="/dashboard"
+            className={`${styles.navLink} ${styles.active}`}
+          >
+            Dashboard
+          </Link>
+          <Link href="/favorites" className={styles.navLink}>
+            Favorites
+          </Link>
+        </div>
+      </nav>
+
+      <main className={styles.main}>
+        <h1 className={styles.title}>Music Dashboard</h1>
+
+        <div className={styles.searchContainer}>
+          <SongSearch onSearch={handleSearch} />
         </div>
 
-        <div className="bg-white bg-opacity-90 backdrop-filter backdrop-blur-sm rounded-2xl shadow-xl overflow-hidden">
-          <div className="px-4 py-5 sm:p-6">
-            <SongList />
-          </div>
+        <div className={styles.categoriesContainer}>
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              className={`${styles.categoryButton} ${
+                category === cat ? styles.active : ""
+              }`}
+              onClick={() => {
+                setCategory(cat);
+                setSearchQuery("");
+              }}
+            >
+              {cat}
+            </button>
+          ))}
         </div>
 
-        <div className="mt-8 text-center text-sm text-gray-300">
-          <p>Powered by Spotify API</p>
+        <div className={styles.contentContainer}>
+          <h2 className={styles.sectionTitle}>
+            {searchQuery
+              ? `Search Results for "${searchQuery}"`
+              : `${category} Songs`}
+          </h2>
+
+          <SongList songs={songs} isLoading={isLoading} error={error} />
         </div>
-      </div>
-    </main>
+      </main>
+
+      <footer className={styles.footer}>
+        <p>© 2023 Music App. All rights reserved.</p>
+      </footer>
+    </div>
   );
 }

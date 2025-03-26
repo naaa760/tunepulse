@@ -1,77 +1,115 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { SpotifyService } from "../spotify/spotify.service";
-import { CreateSongDto } from "../dto/create-song.dto";
 import { Song } from "./song.entity";
 
 @Injectable()
 export class SongsService {
+  private readonly logger = new Logger(SongsService.name);
+
   constructor(
     private prisma: PrismaService,
-    private spotifyService: SpotifyService,
+    private spotifyService: SpotifyService
   ) {}
 
   async findAll(): Promise<Song[]> {
     try {
-      const songs = await this.prisma.song.findMany();
-      return songs as Song[];
+      return await this.prisma.song.findMany({
+        orderBy: { title: "asc" },
+      });
     } catch (error) {
-      console.error("Error fetching songs:", error);
-      throw new Error("Failed to fetch songs");
+      this.logger.error("Error fetching all songs", error);
+      return [];
     }
   }
 
   async search(query: string): Promise<Song[]> {
+    if (!query || query.trim() === "") {
+      return this.findAll();
+    }
+
     try {
-      // Get results from Spotify
-      const spotifyResults = await this.spotifyService.searchTracks(query);
+      // First check local database
+      const localResults = await this.prisma.song.findMany({
+        where: {
+          OR: [
+            { title: { contains: query, mode: "insensitive" } },
+            { artist: { contains: query, mode: "insensitive" } },
+            { album: { contains: query, mode: "insensitive" } },
+          ],
+        },
+        orderBy: { popularity: "desc" },
+      });
 
-      // Process in batches of 3 instead of all at once
-      const batchSize = 3;
-      const savedSongs: Song[] = [];
-
-      for (let i = 0; i < spotifyResults.length; i += batchSize) {
-        const batch = spotifyResults.slice(i, i + batchSize);
-        const batchResults = await Promise.all(
-          batch.map((songData) =>
-            this.prisma.song.upsert({
-              where: {
-                title_artist: {
-                  title: songData.title,
-                  artist: songData.artist,
-                },
-              },
-              update: {},
-              create: {
-                title: songData.title,
-                artist: songData.artist,
-                albumArt: songData.albumArt,
-                duration: songData.duration,
-                createdAt: songData.createdAt,
-                previewUrl: songData.previewUrl,
-              },
-            }),
-          ),
-        );
-        savedSongs.push(...(batchResults as Song[]));
+      // If we have enough results, return them
+      if (localResults.length >= 10) {
+        return localResults;
       }
 
-      return savedSongs;
+      // Otherwise, fetch from Spotify and save to database
+      const spotifyResults = await this.spotifyService.searchTracks(query);
+      const newSongs: Song[] = [];
+
+      for (const track of spotifyResults) {
+        // Check if song already exists in database
+        const existingSong = await this.prisma.song.findFirst({
+          where: { spotifyId: track.id },
+        });
+
+        if (!existingSong) {
+          // Create new song in database
+          const newSong = await this.prisma.song.create({
+            data: {
+              spotifyId: track.id,
+              title: track.name,
+              artist: track.artists.map((a) => a.name).join(", "),
+              album: track.album.name,
+              releaseYear: new Date(track.album.release_date).getFullYear(),
+              duration: track.duration_ms,
+              imageUrl: track.album.images[0]?.url,
+              previewUrl: track.preview_url,
+              popularity: track.popularity,
+              externalUrl: track.external_urls.spotify,
+            },
+          });
+          newSongs.push(newSong);
+        } else {
+          newSongs.push(existingSong);
+        }
+      }
+
+      // Combine results, remove duplicates, and sort by popularity
+      const combinedResults = [...localResults];
+
+      for (const song of newSongs) {
+        if (!combinedResults.some((s) => s.id === song.id)) {
+          combinedResults.push(song);
+        }
+      }
+
+      return combinedResults.sort(
+        (a, b) => (b.popularity || 0) - (a.popularity || 0)
+      );
     } catch (error) {
-      console.error("Error searching songs:", error);
-      return []; // Return empty array instead of throwing
+      this.logger.error(`Error searching songs for query: ${query}`, error);
+      return [];
     }
   }
 
-  async create(createSongDto: CreateSongDto): Promise<Song> {
+  async findOne(id: number): Promise<Song> {
     try {
-      const song = (await this.prisma.song.create({
-        data: createSongDto,
-      })) as Song;
+      const song = await this.prisma.song.findUnique({
+        where: { id },
+      });
+
+      if (!song) {
+        throw new NotFoundException(`Song with ID ${id} not found`);
+      }
+
       return song;
-    } catch (error: any) {
-      console.error("Error creating song:", error);
-      throw new Error("Failed to create song");
+    } catch (error) {
+      this.logger.error(`Error fetching song with id ${id}`, error);
+      throw error;
     }
   }
 }

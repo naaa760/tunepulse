@@ -1,228 +1,159 @@
-.imageCardSection {
-  width: 100%;
-  padding: 4rem 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-  z-index: 10;
-  background: transparent;
-}
-
-.cardContainer {
-  opacity: 0;
-  transform: translateY(50px);
-  animation: fadeInUp 0.8s ease forwards;
-  animation-play-state: paused;
-  animation-delay: calc(var(--scroll) * -1s);
-}
-
-.imageCard {
-  max-width: 1000px;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+.container {
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  transition: transform 0.3s ease;
 }
 
-.imageCard:hover {
-  transform: translateY(-10px);
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.cardImage {
-  width: 100%;
-  height: auto;
-  object-fit: cover;
-  border-radius: 16px 16px 0 0;
+.logo {
+  display: flex;
+  align-items: center;
+  font-size: 1.5rem;
+  font-weight: 700;
 }
 
-.cardContent {
-  padding: 2rem;
-  color: white;
+.logoIcon {
+  margin-right: 0.5rem;
+  font-size: 1.8rem;
 }
 
-.cardContent h2 {
-  font-size: 2rem;
-  margin-bottom: 1rem;
-  background: linear-gradient(90deg, #ff8a00, #e52e71);
+.logoText {
+  background: linear-gradient(90deg, #0070f3, #00c6ff);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-.cardContent p {
-  font-size: 1.1rem;
-  line-height: 1.6;
-  margin-bottom: 1.5rem;
-}
-
-.cardButton {
-  background: linear-gradient(90deg, #ff8a00, #e52e71);
-  border: none;
-  color: white;
-  padding: 0.8rem 2rem;
-  font-size: 1rem;
-  border-radius: 30px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.cardButton:hover {
-  transform: scale(1.05);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-}
-
-@keyframes fadeInUp {
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Add these styles for the navbar */
-.navbarContainer {
+.navLinks {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(10px);
-  border-radius: 30px;
-  padding: 0.75rem 1.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  gap: 1.5rem;
 }
 
-.navButton {
-  position: relative;
-  color: white;
+.navLink {
+  color: #333;
+  text-decoration: none;
   font-weight: 500;
-  transition: all 0.3s ease;
-  padding: 0.5rem 0.75rem;
+  transition: color 0.2s ease;
 }
 
-.navButton:hover {
-  color: #10b981; /* emerald-500 */
+.navLink:hover {
+  color: #0070f3;
 }
 
-.navButton::after {
-  content: "";
-  position: absolute;
-  width: 0;
-  height: 2px;
-  bottom: -2px;
-  left: 50%;
-  background: linear-gradient(90deg, #ff8a00, #e52e71);
-  transition: all 0.3s ease;
-  transform: translateX(-50%);
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.navButton:hover::after {
-  width: 80%;
+.heroSection {
+  width: 100%;
+  padding: 5rem 2rem;
+  text-align: center;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+.title {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  background: linear-gradient(90deg, #0070f3, #00c6ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.subtitle {
+  font-size: 1.2rem;
+  color: #666;
+  margin-bottom: 2rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .dashboardButton {
-  background: linear-gradient(90deg, #3b82f6, #2563eb);
+  display: inline-block;
+  padding: 0.8rem 2rem;
+  background-color: #0070f3;
   color: white;
-  font-weight: 600;
-  padding: 0.75rem 1.5rem;
-  border-radius: 30px;
-  transition: all 0.3s ease;
-  border: none;
-  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+  text-decoration: none;
+  border-radius: 5px;
+  font-weight: 500;
+  transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
 .dashboardButton:hover {
+  background-color: #0051a9;
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.6);
 }
 
-.subscribeButton {
-  background: linear-gradient(90deg, #10b981, #059669);
-  color: black;
-  font-weight: 600;
-  padding: 0.75rem 1.5rem;
-  border-radius: 30px;
-  transition: all 0.3s ease;
-  border: none;
-  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
-}
-
-.subscribeButton:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.6);
-}
-
-/* Hero buttons */
-.heroButton {
-  background: linear-gradient(90deg, #10b981, #059669);
-  color: black;
-  font-weight: 600;
-  padding: 1rem 2rem;
-  border-radius: 30px;
-  transition: all 0.3s ease;
-  border: none;
-  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
-}
-
-.heroButton:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.6);
-}
-
-.outlineButton {
-  background: transparent;
-  color: white;
-  font-weight: 600;
-  padding: 1rem 2rem;
-  border-radius: 30px;
-  transition: all 0.3s ease;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
-}
-
-.outlineButton:hover {
-  border-color: rgba(255, 255, 255, 0.8);
-  background: rgba(255, 255, 255, 0.05);
-  transform: translateY(-3px);
-}
-
-/* Add these styles for the background image */
-.landingPage {
-  position: relative;
-  min-height: 100vh;
-  background-color: black;
-  overflow: hidden;
-}
-
-.backgroundImage {
-  position: absolute;
-  top: 0;
-  left: 0;
+.featuresSection {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 2rem;
+  padding: 5rem 2rem;
+  max-width: 1200px;
   width: 100%;
-  height: 100%;
-  background-image: url("/li.jpg");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  opacity: 0.7;
-  z-index: 1;
 }
 
-.backgroundImage::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0.8) 0%,
-    rgba(0, 0, 0, 0.5) 50%,
-    rgba(0, 0, 0, 0.8) 100%
-  );
-  z-index: 2;
+.feature {
+  flex: 1;
+  min-width: 250px;
+  max-width: 350px;
+  padding: 2rem;
+  text-align: center;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.feature:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.featureIcon {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.featureTitle {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.featureDescription {
+  color: #666;
+}
+
+.footer {
+  padding: 2rem;
+  text-align: center;
+  background-color: #f5f5f5;
+  color: #666;
+}
+
+@media (max-width: 768px) {
+  .title {
+    font-size: 2.5rem;
+  }
+
+  .featuresSection {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .feature {
+    max-width: 100%;
+  }
 }

@@ -1,10 +1,13 @@
-import { Song } from "../songs/song.entity";
-export declare class SpotifyService {
-    private spotifyToken;
-    private readonly clientId;
-    private readonly clientSecret;
-    constructor();
+import { OnModuleInit } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+export declare class SpotifyService implements OnModuleInit {
+    private configService;
+    private accessToken;
+    private tokenExpiry;
+    private readonly logger;
+    constructor(configService: ConfigService);
+    onModuleInit(): Promise<void>;
     private getAccessToken;
-    searchTracks(query: string): Promise<Array<Omit<Song, "id" | "favorites">>>;
-    private formatDuration;
+    searchTracks(query: string, limit?: number): Promise<any[]>;
+    getTrack(spotifyId: string): Promise<any>;
 }

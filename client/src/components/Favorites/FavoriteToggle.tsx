@@ -1,33 +1,29 @@
+import React from "react";
+import styles from "./FavoriteToggle.module.css";
+
 interface FavoriteToggleProps {
   isFavorite: boolean;
-  onClick: () => void;
+  onToggle: () => void;
 }
 
-export const FavoriteToggle = ({
+const FavoriteToggle: React.FC<FavoriteToggleProps> = ({
   isFavorite,
-  onClick,
-}: FavoriteToggleProps) => {
+  onToggle,
+}) => {
   return (
     <button
-      onClick={onClick}
-      className={`p-2 rounded-full transition-colors ${
-        isFavorite ? "text-red-500" : "text-gray-400"
-      } hover:bg-gray-100`}
+      className={`${styles.favoriteButton} ${isFavorite ? styles.active : ""}`}
+      onClick={onToggle}
+      aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
+      title={isFavorite ? "Remove from favorites" : "Add to favorites"}
     >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        className="h-6 w-6"
-        fill={isFavorite ? "currentColor" : "none"}
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-        />
-      </svg>
+      {isFavorite ? (
+        <span className={styles.favoriteIcon}>❤️</span>
+      ) : (
+        <span className={styles.favoriteIcon}>🤍</span>
+      )}
     </button>
   );
 };
+
+export default FavoriteToggle;

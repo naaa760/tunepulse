@@ -8,17 +8,25 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
+const config_1 = require("@nestjs/config");
+const prisma_module_1 = require("./prisma/prisma.module");
+const spotify_module_1 = require("./spotify/spotify.module");
 const songs_module_1 = require("./songs/songs.module");
 const favorites_module_1 = require("./favorites/favorites.module");
-const app_controller_1 = require("./app.controller");
-const spotify_module_1 = require("./spotify/spotify.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
-        imports: [songs_module_1.SongsModule, favorites_module_1.FavoritesModule, spotify_module_1.SpotifyModule],
-        controllers: [app_controller_1.AppController],
+        imports: [
+            config_1.ConfigModule.forRoot({
+                isGlobal: true,
+            }),
+            prisma_module_1.PrismaModule,
+            spotify_module_1.SpotifyModule,
+            songs_module_1.SongsModule,
+            favorites_module_1.FavoritesModule,
+        ],
     })
 ], AppModule);
 //# sourceMappingURL=app.module.js.map

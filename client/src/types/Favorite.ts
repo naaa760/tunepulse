@@ -1,6 +1,12 @@
 export interface Favorite {
   id: number;
+  userId: number;
   songId: number;
-  userId: string;
-  createdAt: string;
+  createdAt: Date;
+}
+
+export interface FavoriteResponse {
+  success: boolean;
+  message?: string;
+  favorite?: Favorite;
 }

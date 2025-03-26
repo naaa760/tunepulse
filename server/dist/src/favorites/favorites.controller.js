@@ -21,44 +21,93 @@ let FavoritesController = class FavoritesController {
     constructor(favoritesService) {
         this.favoritesService = favoritesService;
     }
-    async findAll(userId) {
-        if (!userId) {
-            throw new common_1.HttpException("UserId is required", common_1.HttpStatus.BAD_REQUEST);
-        }
-        return this.favoritesService.findByUserId(userId);
+    async findAll() {
+        const userId = 1;
+        return this.favoritesService.findAll(userId);
     }
-    async toggleFavorite(createFavoriteDto) {
+    async create(createFavoriteDto) {
+        const userId = 1;
         try {
-            console.log("Received toggle request:", createFavoriteDto);
-            const result = await this.favoritesService.toggleFavorite(createFavoriteDto);
-            console.log("Toggle result:", result);
-            return result;
+            const favorite = await this.favoritesService.create(userId, createFavoriteDto);
+            return {
+                success: true,
+                message: "Song added to favorites",
+                favorite,
+            };
         }
         catch (error) {
-            console.error("Toggle favorite error:", error);
-            throw new common_1.HttpException({
-                status: common_1.HttpStatus.INTERNAL_SERVER_ERROR,
-                error: "Failed to toggle favorite",
-                message: error instanceof Error ? error.message : "Unknown error occurred",
-            }, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+            if (error instanceof common_1.NotFoundException) {
+                throw error;
+            }
+            if (error instanceof common_1.ConflictException) {
+                return {
+                    success: false,
+                    message: error.message,
+                };
+            }
+            return {
+                success: false,
+                message: "Failed to add song to favorites",
+            };
         }
+    }
+    async remove(songId) {
+        const userId = 1;
+        try {
+            await this.favoritesService.remove(userId, songId);
+            return {
+                success: true,
+                message: "Song removed from favorites",
+            };
+        }
+        catch (error) {
+            if (error instanceof common_1.NotFoundException) {
+                return {
+                    success: false,
+                    message: error.message,
+                };
+            }
+            return {
+                success: false,
+                message: "Failed to remove song from favorites",
+            };
+        }
+    }
+    async checkIsFavorite(songId) {
+        const userId = 1;
+        const isFavorite = await this.favoritesService.checkIsFavorite(userId, songId);
+        return { isFavorite };
     }
 };
 exports.FavoritesController = FavoritesController;
 __decorate([
     (0, common_1.Get)(),
-    __param(0, (0, common_1.Query)("userId")),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], FavoritesController.prototype, "findAll", null);
 __decorate([
-    (0, common_1.Post)("toggle"),
+    (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [create_favorite_dto_1.CreateFavoriteDto]),
     __metadata("design:returntype", Promise)
-], FavoritesController.prototype, "toggleFavorite", null);
+], FavoritesController.prototype, "create", null);
+__decorate([
+    (0, common_1.Delete)(":songId"),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    __param(0, (0, common_1.Param)("songId", common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], FavoritesController.prototype, "remove", null);
+__decorate([
+    (0, common_1.Get)("check/:songId"),
+    __param(0, (0, common_1.Param)("songId", common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], FavoritesController.prototype, "checkIsFavorite", null);
 exports.FavoritesController = FavoritesController = __decorate([
     (0, common_1.Controller)("favorites"),
     __metadata("design:paramtypes", [favorites_service_1.FavoritesService])

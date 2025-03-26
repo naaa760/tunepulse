@@ -1,1 +1,1 @@
-{"version":3,"file":"favorite.entity.js","sourceRoot":"","sources":["../../../src/favorites/favorite.entity.ts"],"names":[],"mappings":";;;AAEA,MAAa,QAAQ;IACnB,EAAE,CAAS;IACX,MAAM,CAAS;IACf,MAAM,CAAS;IACf,SAAS,CAAO;IAChB,IAAI,CAAQ;CACb;AAND,4BAMC"}
+{"version":3,"file":"favorite.entity.js","sourceRoot":"","sources":["../../../src/favorites/favorite.entity.ts"],"names":[],"mappings":";;;AAEA,MAAa,QAAQ;IACnB,EAAE,CAAS;IACX,MAAM,CAAS;IACf,MAAM,CAAS;IACf,SAAS,CAAO;CACjB;AALD,4BAKC"}

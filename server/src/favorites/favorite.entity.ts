@@ -1,9 +1,8 @@
-import { Song } from "../songs/song.entity";
+import { Favorite as PrismaFavorite } from "@prisma/client";
 
-export class Favorite {
+export class Favorite implements PrismaFavorite {
   id: number;
+  userId: number;
   songId: number;
-  userId: string;
   createdAt: Date;
-  song?: Song;
 }

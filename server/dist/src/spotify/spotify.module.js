@@ -8,12 +8,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SpotifyModule = void 0;
 const common_1 = require("@nestjs/common");
+const config_1 = require("@nestjs/config");
 const spotify_service_1 = require("./spotify.service");
 let SpotifyModule = class SpotifyModule {
 };
 exports.SpotifyModule = SpotifyModule;
 exports.SpotifyModule = SpotifyModule = __decorate([
     (0, common_1.Module)({
+        imports: [config_1.ConfigModule],
         providers: [spotify_service_1.SpotifyService],
         exports: [spotify_service_1.SpotifyService],
     })

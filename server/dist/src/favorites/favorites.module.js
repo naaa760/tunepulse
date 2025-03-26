@@ -10,15 +10,15 @@ exports.FavoritesModule = void 0;
 const common_1 = require("@nestjs/common");
 const favorites_controller_1 = require("./favorites.controller");
 const favorites_service_1 = require("./favorites.service");
-const prisma_service_1 = require("../prisma/prisma.service");
+const prisma_module_1 = require("../prisma/prisma.module");
 let FavoritesModule = class FavoritesModule {
 };
 exports.FavoritesModule = FavoritesModule;
 exports.FavoritesModule = FavoritesModule = __decorate([
     (0, common_1.Module)({
+        imports: [prisma_module_1.PrismaModule],
         controllers: [favorites_controller_1.FavoritesController],
-        providers: [favorites_service_1.FavoritesService, prisma_service_1.PrismaService],
-        exports: [favorites_service_1.FavoritesService],
+        providers: [favorites_service_1.FavoritesService],
     })
 ], FavoritesModule);
 //# sourceMappingURL=favorites.module.js.map

@@ -1,51 +1,43 @@
 import {
   Controller,
   Get,
-  Post,
-  Body,
+  Param,
   Query,
-  HttpException,
-  HttpStatus,
+  ParseIntPipe,
+  NotFoundException,
 } from "@nestjs/common";
 import { SongsService } from "./songs.service";
-import { CreateSongDto } from "../dto/create-song.dto";
 import { Song } from "./song.entity";
+import { Logger } from "@nestjs/common";
 
 @Controller("songs")
 export class SongsController {
-  constructor(private readonly songsService: SongsService) {}
+  private readonly logger = new Logger(SongsController.name);
+
+  constructor(private songsService: SongsService) {}
 
   @Get()
   async findAll(): Promise<Song[]> {
-    try {
-      return await this.songsService.findAll();
-    } catch (error) {
-      console.error("Error in findAll:", error);
-      throw new HttpException(
-        "Failed to fetch songs",
-        HttpStatus.INTERNAL_SERVER_ERROR
-      );
-    }
+    return this.songsService.findAll();
   }
 
   @Get("search")
   async search(@Query("q") query: string): Promise<Song[]> {
-    try {
-      if (!query || query.trim() === "") {
-        return this.songsService.findAll();
-      }
-      console.log("Searching for:", query);
-      const results = await this.songsService.search(query);
-      return results;
-    } catch (error) {
-      console.error("Search error:", error);
-      // Return empty array instead of throwing exception
-      return [];
-    }
+    this.logger.log(`Received search request for: ${query}`);
+    const results = await this.songsService.search(query);
+    this.logger.log(`Returning ${results.length} search results`);
+    return results;
   }
 
-  @Post()
-  create(@Body() createSongDto: CreateSongDto): Promise<Song> {
-    return this.songsService.create(createSongDto);
+  @Get(":id")
+  async findOne(@Param("id", ParseIntPipe) id: number): Promise<Song> {
+    try {
+      return await this.songsService.findOne(id);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new NotFoundException(`Song with ID ${id} not found`);
+    }
   }
 }

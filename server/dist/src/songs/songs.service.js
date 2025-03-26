@@ -8,76 +8,107 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var SongsService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SongsService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
 const spotify_service_1 = require("../spotify/spotify.service");
-let SongsService = class SongsService {
+let SongsService = SongsService_1 = class SongsService {
     prisma;
     spotifyService;
+    logger = new common_1.Logger(SongsService_1.name);
     constructor(prisma, spotifyService) {
         this.prisma = prisma;
         this.spotifyService = spotifyService;
     }
     async findAll() {
         try {
-            const songs = await this.prisma.song.findMany();
-            return songs;
+            return await this.prisma.song.findMany({
+                orderBy: { title: "asc" },
+            });
         }
         catch (error) {
-            console.error("Error fetching songs:", error);
-            throw new Error("Failed to fetch songs");
-        }
-    }
-    async search(query) {
-        try {
-            const spotifyResults = await this.spotifyService.searchTracks(query);
-            const batchSize = 3;
-            const savedSongs = [];
-            for (let i = 0; i < spotifyResults.length; i += batchSize) {
-                const batch = spotifyResults.slice(i, i + batchSize);
-                const batchResults = await Promise.all(batch.map((songData) => this.prisma.song.upsert({
-                    where: {
-                        title_artist: {
-                            title: songData.title,
-                            artist: songData.artist,
-                        },
-                    },
-                    update: {},
-                    create: {
-                        title: songData.title,
-                        artist: songData.artist,
-                        albumArt: songData.albumArt,
-                        duration: songData.duration,
-                        createdAt: songData.createdAt,
-                        previewUrl: songData.previewUrl,
-                    },
-                })));
-                savedSongs.push(...batchResults);
-            }
-            return savedSongs;
-        }
-        catch (error) {
-            console.error("Error searching songs:", error);
+            this.logger.error("Error fetching all songs", error);
             return [];
         }
     }
-    async create(createSongDto) {
+    async search(query) {
+        if (!query || query.trim() === "") {
+            return this.findAll();
+        }
         try {
-            const song = (await this.prisma.song.create({
-                data: createSongDto,
-            }));
+            const localResults = await this.prisma.song.findMany({
+                where: {
+                    OR: [
+                        { title: { contains: query, mode: "insensitive" } },
+                        { artist: { contains: query, mode: "insensitive" } },
+                        { album: { contains: query, mode: "insensitive" } },
+                    ],
+                },
+                orderBy: { popularity: "desc" },
+            });
+            if (localResults.length >= 10) {
+                return localResults;
+            }
+            const spotifyResults = await this.spotifyService.searchTracks(query);
+            const newSongs = [];
+            for (const track of spotifyResults) {
+                const existingSong = await this.prisma.song.findFirst({
+                    where: { spotifyId: track.id },
+                });
+                if (!existingSong) {
+                    const newSong = await this.prisma.song.create({
+                        data: {
+                            spotifyId: track.id,
+                            title: track.name,
+                            artist: track.artists.map((a) => a.name).join(", "),
+                            album: track.album.name,
+                            releaseYear: new Date(track.album.release_date).getFullYear(),
+                            duration: track.duration_ms,
+                            imageUrl: track.album.images[0]?.url,
+                            previewUrl: track.preview_url,
+                            popularity: track.popularity,
+                            externalUrl: track.external_urls.spotify,
+                        },
+                    });
+                    newSongs.push(newSong);
+                }
+                else {
+                    newSongs.push(existingSong);
+                }
+            }
+            const combinedResults = [...localResults];
+            for (const song of newSongs) {
+                if (!combinedResults.some((s) => s.id === song.id)) {
+                    combinedResults.push(song);
+                }
+            }
+            return combinedResults.sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
+        }
+        catch (error) {
+            this.logger.error(`Error searching songs for query: ${query}`, error);
+            return [];
+        }
+    }
+    async findOne(id) {
+        try {
+            const song = await this.prisma.song.findUnique({
+                where: { id },
+            });
+            if (!song) {
+                throw new common_1.NotFoundException(`Song with ID ${id} not found`);
+            }
             return song;
         }
         catch (error) {
-            console.error("Error creating song:", error);
-            throw new Error("Failed to create song");
+            this.logger.error(`Error fetching song with id ${id}`, error);
+            throw error;
         }
     }
 };
 exports.SongsService = SongsService;
-exports.SongsService = SongsService = __decorate([
+exports.SongsService = SongsService = SongsService_1 = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
         spotify_service_1.SpotifyService])

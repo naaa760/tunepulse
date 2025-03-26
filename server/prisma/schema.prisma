@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,24 +8,39 @@ datasource db {
 }
 
 model Song {
-  id        Int        @id @default(autoincrement())
-  title     String
-  artist    String
-  albumArt  String?
-  duration  String
-  createdAt DateTime   @default(now())
-  previewUrl String?
-  favorites Favorite[]
+  id          Int        @id @default(autoincrement())
+  spotifyId   String?    @unique
+  title       String
+  artist      String
+  album       String?
+  releaseYear Int?
+  genre       String?
+  duration    Int?       // in milliseconds
+  imageUrl    String?
+  previewUrl  String?
+  popularity  Int?
+  externalUrl String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  favorites   Favorite[]
+}
 
-  @@unique([title, artist], name: "title_artist")
+model User {
+  id        Int        @id @default(autoincrement())
+  email     String     @unique
+  name      String?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  favorites Favorite[]
 }
 
 model Favorite {
   id        Int      @id @default(autoincrement())
+  userId    Int
   songId    Int
-  userId    String
   createdAt DateTime @default(now())
-  song      Song     @relation(fields: [songId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  song      Song     @relation(fields: [songId], references: [id], onDelete: Cascade)
 
-  @@unique([songId, userId], name: "songId_userId")
-}
+  @@unique([userId, songId])
+} 

@@ -11,41 +11,37 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var SongsController_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SongsController = void 0;
 const common_1 = require("@nestjs/common");
 const songs_service_1 = require("./songs.service");
-const create_song_dto_1 = require("../dto/create-song.dto");
-let SongsController = class SongsController {
+const common_2 = require("@nestjs/common");
+let SongsController = SongsController_1 = class SongsController {
     songsService;
+    logger = new common_2.Logger(SongsController_1.name);
     constructor(songsService) {
         this.songsService = songsService;
     }
     async findAll() {
-        try {
-            return await this.songsService.findAll();
-        }
-        catch (error) {
-            console.error("Error in findAll:", error);
-            throw new common_1.HttpException("Failed to fetch songs", common_1.HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        return this.songsService.findAll();
     }
     async search(query) {
+        this.logger.log(`Received search request for: ${query}`);
+        const results = await this.songsService.search(query);
+        this.logger.log(`Returning ${results.length} search results`);
+        return results;
+    }
+    async findOne(id) {
         try {
-            if (!query || query.trim() === "") {
-                return this.songsService.findAll();
-            }
-            console.log("Searching for:", query);
-            const results = await this.songsService.search(query);
-            return results;
+            return await this.songsService.findOne(id);
         }
         catch (error) {
-            console.error("Search error:", error);
-            return [];
+            if (error instanceof common_1.NotFoundException) {
+                throw error;
+            }
+            throw new common_1.NotFoundException(`Song with ID ${id} not found`);
         }
-    }
-    create(createSongDto) {
-        return this.songsService.create(createSongDto);
     }
 };
 exports.SongsController = SongsController;
@@ -63,13 +59,13 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], SongsController.prototype, "search", null);
 __decorate([
-    (0, common_1.Post)(),
-    __param(0, (0, common_1.Body)()),
+    (0, common_1.Get)(":id"),
+    __param(0, (0, common_1.Param)("id", common_1.ParseIntPipe)),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [create_song_dto_1.CreateSongDto]),
+    __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
-], SongsController.prototype, "create", null);
-exports.SongsController = SongsController = __decorate([
+], SongsController.prototype, "findOne", null);
+exports.SongsController = SongsController = SongsController_1 = __decorate([
     (0, common_1.Controller)("songs"),
     __metadata("design:paramtypes", [songs_service_1.SongsService])
 ], SongsController);
