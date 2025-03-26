@@ -1,18 +1,24 @@
 .container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(250, 235, 225, 0.97) 0%,
+    rgba(235, 210, 190, 0.97) 60%,
+    rgba(220, 195, 170, 0.97) 100%
+  );
   padding: 2rem 1rem;
+  color: #333;
 }
 
 .content {
   max-width: 1200px;
   margin: 0 auto;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.6);
   backdrop-filter: blur(10px);
   border-radius: 20px;
   padding: 2rem;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.4);
 }
 
 .header {
@@ -26,14 +32,14 @@
 
 .header h1 {
   font-size: 2rem;
-  color: #fff;
+  color: #000;
   display: flex;
   align-items: center;
   letter-spacing: 0.5px;
 }
 
 .icon {
-  color: #e91e63;
+  color: #ff6347;
   margin-right: 0.5rem;
   font-size: 1.8rem;
 }
@@ -42,8 +48,8 @@
   display: flex;
   align-items: center;
   padding: 0.6rem 1.2rem;
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
+  background: rgba(0, 0, 0, 0.1);
+  color: #000;
   border: none;
   border-radius: 30px;
   font-weight: 500;
@@ -52,7 +58,7 @@
 }
 
 .backButton:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.2);
   transform: translateY(-2px);
 }
 
@@ -67,15 +73,15 @@
   align-items: center;
   justify-content: center;
   padding: 4rem 2rem;
-  color: #b3b3b3;
+  color: rgba(0, 0, 0, 0.7);
 }
 
 .loadingSpinner {
   width: 40px;
   height: 40px;
-  border: 4px solid rgba(255, 255, 255, 0.1);
+  border: 4px solid rgba(255, 255, 255, 0.3);
   border-radius: 50%;
-  border-top-color: #e91e63;
+  border-top-color: #ff6347;
   animation: spin 1s ease-in-out infinite;
   margin-bottom: 1rem;
 }
@@ -113,20 +119,20 @@
 .emptyState {
   text-align: center;
   padding: 4rem 2rem;
-  color: #b3b3b3;
+  color: rgba(0, 0, 0, 0.7);
   animation: fadeIn 0.5s ease-in-out;
 }
 
 .emptyIcon {
   font-size: 4rem;
   margin-bottom: 1rem;
-  color: rgba(255, 255, 255, 0.2);
+  color: rgba(0, 0, 0, 0.3);
 }
 
 .emptyState h2 {
   font-size: 1.8rem;
   margin-bottom: 0.5rem;
-  color: #fff;
+  color: #000;
 }
 
 .emptyState p {
@@ -137,19 +143,19 @@
 .actionButton {
   display: inline-block;
   padding: 0.8rem 1.5rem;
-  background: #e91e63;
+  background: #ff6347;
   color: white;
   border-radius: 30px;
   font-weight: 600;
   text-decoration: none;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(233, 30, 99, 0.3);
+  box-shadow: 0 4px 12px rgba(255, 99, 71, 0.3);
 }
 
 .actionButton:hover {
-  background: #ec407a;
+  background: #ff7d63;
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(233, 30, 99, 0.4);
+  box-shadow: 0 6px 16px rgba(255, 99, 71, 0.4);
 }
 
 .favoritesContainer {
@@ -157,17 +163,17 @@
 }
 
 .favoritesCount {
-  background: rgba(233, 30, 99, 0.1);
+  background: rgba(255, 99, 71, 0.1);
   padding: 0.8rem 1.2rem;
   border-radius: 10px;
-  color: #f8bbd0;
+  color: #000;
   margin-bottom: 1.5rem;
   display: inline-block;
 }
 
 .favoritesCount span {
   font-weight: bold;
-  color: #e91e63;
+  color: #ff6347;
 }
 
 .songList {
@@ -186,12 +192,51 @@
 }
 
 @media (max-width: 768px) {
+  .content {
+    padding: 1.5rem 1rem;
+    border-radius: 15px;
+  }
+
   .header {
     flex-direction: column;
     align-items: flex-start;
+    gap: 1.5rem;
+  }
+
+  .header h1 {
+    font-size: 1.8rem;
   }
 
   .backButton {
     align-self: flex-start;
+  }
+
+  .emptyState {
+    padding: 2rem 1rem;
+  }
+
+  .emptyState h2 {
+    font-size: 1.5rem;
+  }
+
+  .actionButton {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 1rem 0.5rem;
+  }
+
+  .favoritesCount {
+    width: 100%;
+    text-align: center;
+  }
+
+  .backButton {
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
   }
 }

@@ -45,19 +45,25 @@
 
 .dashboardContainer {
   min-height: 100vh;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(250, 235, 225, 0.97) 0%,
+    rgba(235, 210, 190, 0.97) 60%,
+    rgba(220, 195, 170, 0.97) 100%
+  );
   padding: 2rem 1rem;
+  color: #333;
 }
 
 .dashboardContent {
   max-width: 1200px;
   margin: 0 auto;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.6);
   backdrop-filter: blur(10px);
   border-radius: 20px;
   padding: 2rem;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.4);
 }
 
 .header {
@@ -67,7 +73,7 @@
 
 .header h1 {
   font-size: 3rem;
-  color: #fff;
+  color: #000;
   margin-bottom: 0.5rem;
   display: flex;
   align-items: center;
@@ -76,12 +82,12 @@
 }
 
 .icon {
-  color: #1db954;
+  color: #ff6347;
   margin-right: 0.5rem;
 }
 
 .subtitle {
-  color: #b3b3b3;
+  color: rgba(0, 0, 0, 0.7);
   font-size: 1.2rem;
   font-weight: 300;
 }
@@ -99,20 +105,20 @@
   display: flex;
   align-items: center;
   padding: 0.8rem 1.5rem;
-  background: #1db954;
+  background: #ff6347;
   color: white;
   border: none;
   border-radius: 30px;
   font-weight: 600;
   text-decoration: none;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(29, 185, 84, 0.3);
+  box-shadow: 0 4px 12px rgba(255, 99, 71, 0.3);
 }
 
 .favoritesButton:hover {
-  background: #1ed760;
+  background: #ff7d63;
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(29, 185, 84, 0.4);
+  box-shadow: 0 6px 16px rgba(255, 99, 71, 0.4);
 }
 
 .buttonIcon {
@@ -126,15 +132,15 @@
   align-items: center;
   justify-content: center;
   padding: 4rem 2rem;
-  color: #b3b3b3;
+  color: rgba(0, 0, 0, 0.7);
 }
 
 .loadingSpinner {
   width: 40px;
   height: 40px;
-  border: 4px solid rgba(255, 255, 255, 0.1);
+  border: 4px solid rgba(255, 255, 255, 0.3);
   border-radius: 50%;
-  border-top-color: #1db954;
+  border-top-color: #ff6347;
   animation: spin 1s ease-in-out infinite;
   margin-bottom: 1rem;
 }
@@ -153,7 +159,7 @@
   margin: 2rem 0;
   display: flex;
   align-items: center;
-  color: #ffb3b3;
+  color: #dc3545;
 }
 
 .errorIcon {
@@ -172,13 +178,13 @@
 .emptyState {
   text-align: center;
   padding: 4rem 2rem;
-  color: #b3b3b3;
+  color: rgba(0, 0, 0, 0.7);
 }
 
 .emptyIcon {
   font-size: 4rem;
   margin-bottom: 1rem;
-  color: rgba(255, 255, 255, 0.2);
+  color: rgba(0, 0, 0, 0.3);
 }
 
 .songListContainer {
@@ -197,12 +203,51 @@
 }
 
 @media (max-width: 768px) {
+  .dashboardContent {
+    padding: 1.5rem 1rem;
+    border-radius: 15px;
+  }
+
+  .header h1 {
+    font-size: 2.2rem;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+  }
+
   .actions {
     flex-direction: column;
     align-items: stretch;
+    gap: 1rem;
   }
 
   .favoritesButton {
     justify-content: center;
+    width: 100%;
+  }
+
+  .loadingContainer,
+  .emptyState {
+    padding: 2rem 1rem;
+  }
+
+  .emptyState h2 {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboardContainer {
+    padding: 1rem 0.5rem;
+  }
+
+  .header h1 {
+    font-size: 1.8rem;
+  }
+
+  .errorContainer {
+    padding: 1rem;
+    margin: 1rem 0;
   }
 }
