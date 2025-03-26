@@ -1,7 +1,7 @@
 import { Song } from "@/types/Song";
 
-// TEMPORARY: Hardcode production API URL
-const API_URL = "https://your-backend-url.onrender.com/api";
+// Replace with your ACTUAL Render backend URL
+const API_URL = "https://tunepulse-backend.onrender.com/api";
 // const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
 
 export async function getSongs(query?: string): Promise<Song[]> {
