@@ -4,14 +4,16 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Enable CORS with your production domain
+  // Fix CORS issues
   app.enableCors({
     origin: [
       'http://localhost:3000',
       'https://tunepulse-pfzr.vercel.app',
-      'https://tunepulse-pfzr.vercel.app/',
+      'https://tunepulse-ten.vercel.app',
+      'https://tunepulse-backend.onrender.com',
     ],
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    allowedHeaders: 'Content-Type, Accept, Authorization',
     credentials: true,
   });
 
