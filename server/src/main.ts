@@ -1,13 +1,15 @@
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
 import { ValidationPipe } from "@nestjs/common";
+import { Logger } from "@nestjs/common";
 
 async function bootstrap() {
+  const logger = new Logger("Bootstrap");
   const app = await NestFactory.create(AppModule);
 
-  // Enable CORS
+  // Enable CORS for frontend
   app.enableCors({
-    origin: process.env.FRONTEND_URL || "http://localhost:3000",
+    origin: process.env.FRONTEND_URL || "*",
     credentials: true,
   });
 
@@ -17,6 +19,10 @@ async function bootstrap() {
   // Enable validation
   app.useGlobalPipes(new ValidationPipe());
 
-  await app.listen(process.env.PORT || 4000);
+  // Use PORT from environment or default to 4000
+  const port = process.env.PORT || 4000;
+
+  await app.listen(port);
+  logger.log(`Application listening on port ${port}`);
 }
 bootstrap();
