@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: tunepulse-backend
+    env: node
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: tunepulse-db
+          property: connectionString
+      - key: PORT
+        value: 10000
+
+databases:
+  - name: tunepulse-db
+    plan: free
