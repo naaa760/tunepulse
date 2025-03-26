@@ -9,7 +9,7 @@ async function bootstrap() {
 
   // Enable CORS for your frontend
   app.enableCors({
-    origin: 'http://localhost:3000',
+    origin: '*', // Or specify your frontend URL
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });
@@ -28,7 +28,9 @@ async function bootstrap() {
     next();
   });
 
-  await app.listen(4000);
-  logger.log(`Application is running on: http://localhost:4000`);
+  // Use PORT environment variable provided by Render
+  const port = process.env.PORT || 4000;
+  await app.listen(port);
+  logger.log(`Application is running on port ${port}`);
 }
 bootstrap();
