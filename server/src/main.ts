@@ -7,11 +7,11 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const logger = new Logger('Bootstrap');
 
-  // Enable CORS for your frontend
+  // Enable CORS with a wildcard (temporary fix)
   app.enableCors({
-    origin: ['https://tunepulse-three.vercel.app', 'http://localhost:3000'],
+    origin: '*',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true,
+    credentials: false, // Must be false with wildcard origin
   });
 
   // Enable validation
@@ -25,7 +25,8 @@ async function bootstrap() {
   // Add request logging middleware with proper types
   app.use((req: Request, res: Response, next: NextFunction) => {
     logger.log(`${req.method} ${req.url}`);
-    logger.log(`Origin: ${req.headers.origin}`);
+    logger.log(`Request from: ${req.headers.origin || 'Unknown origin'}`);
+    logger.log(`Headers: ${JSON.stringify(req.headers)}`);
     next();
   });
 

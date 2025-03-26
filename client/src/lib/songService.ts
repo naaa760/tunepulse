@@ -1,6 +1,8 @@
 import { Song } from "@/types/Song";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
+// TEMPORARY: Hardcode production API URL
+const API_URL = "https://your-backend-url.onrender.com/api";
+// const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
 
 export async function getSongs(query?: string): Promise<Song[]> {
   const url = query
