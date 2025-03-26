@@ -22,10 +22,13 @@ const SongSearch: React.FC<SongSearchProps> = ({ onSearch }) => {
     debouncedSearch(query);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSearch(searchQuery);
-  };
+  const handleSubmit = useCallback(
+    (e: React.FormEvent) => {
+      e.preventDefault();
+      onSearch(searchQuery);
+    },
+    [searchQuery, onSearch]
+  );
 
   return (
     <form className={styles.searchForm} onSubmit={handleSubmit}>

@@ -3,7 +3,8 @@ const nextConfig = {
   images: {
     domains: ["i.scdn.co"], // Allow images from Spotify CDN
   },
-  // Other Next.js config options...
+  // Add this to disable font optimization if it's causing issues
+  optimizeFonts: false,
 };
 
 module.exports = nextConfig;

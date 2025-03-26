@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import SongList from "../../components/Songs/SongList";
 import SongSearch from "../../components/Songs/SongSearch";
-import { fetchSongs, searchSongs } from "../../lib/songService";
+import { searchSongs } from "../../lib/songService";
 import { Song } from "../../types/Song";
 import styles from "./dashboard.module.css";
 

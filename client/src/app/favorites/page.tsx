@@ -59,7 +59,7 @@ export default function FavoritesPage() {
         <div className={styles.contentContainer}>
           {favorites.length === 0 && !isLoading ? (
             <div className={styles.emptyState}>
-              <p>You haven't added any favorites yet.</p>
+              <p>You haven&apos;t added any favorites yet.</p>
               <Link href="/dashboard" className={styles.browseLink}>
                 Browse Songs
               </Link>
