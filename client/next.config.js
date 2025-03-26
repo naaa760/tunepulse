@@ -9,7 +9,7 @@ const nextConfig = {
     ];
   },
   images: {
-    domains: ["i.scdn.co"], // Add Spotify image CDN domain
+    domains: ["i.scdn.co"],
   },
 };
 
