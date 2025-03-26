@@ -1,108 +1,185 @@
-import { Injectable, OnModuleInit, Logger } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
-import axios from "axios";
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
+import { ConfigService } from '@nestjs/config';
+import { lastValueFrom } from 'rxjs';
+import { SpotifyTrackDto } from './dto/spotify-track.dto';
+
+// Internal interfaces (not exported)
+interface SpotifyArtist {
+  name: string;
+}
+
+interface SpotifyAlbum {
+  name: string;
+  images: Array<{ url: string }>;
+}
+
+interface SpotifyTrack {
+  id: string;
+  name: string;
+  artists: SpotifyArtist[];
+  album: SpotifyAlbum;
+  preview_url: string | null;
+}
+
+interface SpotifySearchResponse {
+  tracks: {
+    items: SpotifyTrack[];
+  };
+}
+
+interface SpotifyPlaylistResponse {
+  items: Array<{
+    track: SpotifyTrack;
+  }>;
+}
+
+interface SpotifyNewReleasesResponse {
+  albums: {
+    items: Array<{
+      id: string;
+      name: string;
+      artists: SpotifyArtist[];
+      images: Array<{ url: string }>;
+    }>;
+  };
+}
 
 @Injectable()
-export class SpotifyService implements OnModuleInit {
+export class SpotifyService {
   private accessToken: string;
-  private tokenExpiry: Date;
-  private readonly logger = new Logger(SpotifyService.name);
+  private tokenExpiresAt: Date;
 
-  constructor(private configService: ConfigService) {}
+  constructor(
+    private readonly httpService: HttpService,
+    private readonly configService: ConfigService,
+  ) {}
 
-  async onModuleInit() {
-    await this.getAccessToken();
-  }
-
-  private async getAccessToken(): Promise<string> {
-    // Check if token is still valid
-    if (this.accessToken && this.tokenExpiry > new Date()) {
+  async getAccessToken(): Promise<string> {
+    // Check if token exists and is not expired
+    if (this.accessToken && this.tokenExpiresAt > new Date()) {
       return this.accessToken;
     }
 
-    const clientId = this.configService.get<string>("SPOTIFY_CLIENT_ID");
+    const clientId = this.configService.get<string>('SPOTIFY_CLIENT_ID');
     const clientSecret = this.configService.get<string>(
-      "SPOTIFY_CLIENT_SECRET"
+      'SPOTIFY_CLIENT_SECRET',
     );
 
     if (!clientId || !clientSecret) {
-      this.logger.error("Spotify credentials not configured");
-      throw new Error("Spotify credentials not configured");
+      throw new HttpException(
+        'Spotify credentials not configured',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
 
-    const auth = Buffer.from(`${clientId}:${clientSecret}`).toString("base64");
+    const authString = Buffer.from(`${clientId}:${clientSecret}`).toString(
+      'base64',
+    );
 
     try {
-      const response = await axios.post(
-        "https://accounts.spotify.com/api/token",
-        "grant_type=client_credentials",
-        {
-          headers: {
-            Authorization: `Basic ${auth}`,
-            "Content-Type": "application/x-www-form-urlencoded",
+      const response = await lastValueFrom(
+        this.httpService.post(
+          'https://accounts.spotify.com/api/token',
+          'grant_type=client_credentials',
+          {
+            headers: {
+              Authorization: `Basic ${authString}`,
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
           },
-        }
+        ),
       );
 
       this.accessToken = response.data.access_token;
-      // Set expiry time (usually 3600 seconds)
-      this.tokenExpiry = new Date(Date.now() + response.data.expires_in * 1000);
-      this.logger.log("Spotify access token obtained successfully");
+      // Set expiration time (usually 3600 seconds = 1 hour)
+      this.tokenExpiresAt = new Date(
+        Date.now() + response.data.expires_in * 1000,
+      );
 
       return this.accessToken;
     } catch (error) {
-      this.logger.error("Failed to get Spotify access token", error);
-      throw error;
+      throw new HttpException(
+        'Failed to get Spotify access token',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
-  async searchTracks(query: string, limit = 20): Promise<any[]> {
+  async searchSongs(query: string): Promise<SpotifyTrackDto[]> {
     try {
-      this.logger.log(`Searching Spotify for: ${query}`);
+      const token = await this.getAccessToken();
+      const { data } = await lastValueFrom(
+        this.httpService.get<SpotifySearchResponse>(
+          `https://api.spotify.com/v1/search?q=${encodeURIComponent(
+            query,
+          )}&type=track&limit=20`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        ),
+      );
+
+      if (!data.tracks || !data.tracks.items) {
+        return [];
+      }
+
+      return data.tracks.items.map((track) => this.mapTrackToDto(track));
+    } catch (error) {
+      throw new HttpException(
+        'Failed to search songs on Spotify',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async getTopTracks(): Promise<SpotifyTrackDto[]> {
+    try {
       const token = await this.getAccessToken();
 
-      // Add market parameter to get more relevant results
-      const response = await axios.get(
-        `https://api.spotify.com/v1/search?q=${encodeURIComponent(
-          query
-        )}&type=track&limit=${limit}&market=US`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
+      // Use Spotify's charts API instead of a specific playlist
+      const { data } = await lastValueFrom(
+        this.httpService.get<SpotifyNewReleasesResponse>(
+          'https://api.spotify.com/v1/browse/new-releases?limit=20',
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           },
-        }
+        ),
       );
 
-      this.logger.log(
-        `Found ${response.data.tracks.items.length} tracks on Spotify`
-      );
-      return response.data.tracks.items;
+      if (!data || !data.albums || !data.albums.items) {
+        console.log('No data returned from Spotify API');
+        return [];
+      }
+
+      // Map album items to track format
+      return data.albums.items.map((album) => ({
+        spotifyId: album.id,
+        title: album.name,
+        artist: album.artists.map((artist) => artist.name).join(', '),
+        album: album.name,
+        coverImage: album.images[0]?.url || null,
+        previewUrl: null, // New releases endpoint doesn't provide preview URLs
+      }));
     } catch (error) {
-      this.logger.error(
-        `Failed to search Spotify tracks for query: ${query}`,
-        error
-      );
+      console.error('Error fetching top tracks from Spotify:', error);
+      // Return empty array instead of throwing error to prevent 500
       return [];
     }
   }
 
-  async getTrack(spotifyId: string): Promise<any> {
-    const token = await this.getAccessToken();
-
-    try {
-      const response = await axios.get(
-        `https://api.spotify.com/v1/tracks/${spotifyId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      return response.data;
-    } catch (error) {
-      this.logger.error(`Failed to get Spotify track ${spotifyId}`, error);
-      return null;
-    }
+  private mapTrackToDto(track: SpotifyTrack): SpotifyTrackDto {
+    return {
+      spotifyId: track.id,
+      title: track.name,
+      artist: track.artists.map((artist) => artist.name).join(', '),
+      album: track.album.name,
+      coverImage: track.album.images[0]?.url || null,
+      previewUrl: track.preview_url,
+    };
   }
 }

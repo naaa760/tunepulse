@@ -3,97 +3,60 @@ import {
   Get,
   Post,
   Delete,
-  Body,
   Param,
-  ParseIntPipe,
-  NotFoundException,
-  ConflictException,
-  HttpCode,
+  Body,
+  HttpException,
   HttpStatus,
-} from "@nestjs/common";
-import { FavoritesService } from "./favorites.service";
-import { CreateFavoriteDto } from "../dto/create-favorite.dto";
-import { Song } from "../songs/song.entity";
+} from '@nestjs/common';
+import { FavoritesService } from './favorites.service';
 
-@Controller("favorites")
+@Controller('favorites')
 export class FavoritesController {
-  constructor(private favoritesService: FavoritesService) {}
-
-  @Get()
-  async findAll(): Promise<Song[]> {
-    // For simplicity, using a hardcoded user ID (1)
-    // In a real app, you would get this from authentication
-    const userId = 1;
-    return this.favoritesService.findAll(userId);
-  }
+  constructor(private readonly favoritesService: FavoritesService) {}
 
   @Post()
-  async create(@Body() createFavoriteDto: CreateFavoriteDto) {
-    // For simplicity, using a hardcoded user ID (1)
-    const userId = 1;
-
+  async addFavorite(@Body() body: { userId: string; songId: string }) {
+    console.log('Adding favorite:', body);
     try {
-      const favorite = await this.favoritesService.create(
-        userId,
-        createFavoriteDto
+      const { userId, songId } = body;
+      console.log(`Adding favorite: userId=${userId}, songId=${songId}`);
+      return await this.favoritesService.addFavorite(userId, songId);
+    } catch (error) {
+      console.error('Error in addFavorite controller:', error);
+      throw new HttpException(
+        error.message || 'Failed to add favorite',
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
       );
-      return {
-        success: true,
-        message: "Song added to favorites",
-        favorite,
-      };
-    } catch (error) {
-      if (error instanceof NotFoundException) {
-        throw error;
-      }
-      if (error instanceof ConflictException) {
-        return {
-          success: false,
-          message: error.message,
-        };
-      }
-      return {
-        success: false,
-        message: "Failed to add song to favorites",
-      };
     }
   }
 
-  @Delete(":songId")
-  @HttpCode(HttpStatus.OK)
-  async remove(@Param("songId", ParseIntPipe) songId: number) {
-    // For simplicity, using a hardcoded user ID (1)
-    const userId = 1;
+  @Delete(':userId/:songId')
+  removeFavorite(
+    @Param('userId') userId: string,
+    @Param('songId') songId: string,
+  ) {
+    return this.favoritesService.removeFavorite(userId, songId);
+  }
 
+  @Get('user/:userId')
+  async getUserFavorites(@Param('userId') userId: string) {
+    console.log('Getting favorites for user:', userId);
     try {
-      await this.favoritesService.remove(userId, songId);
-      return {
-        success: true,
-        message: "Song removed from favorites",
-      };
+      console.log(`Fetching favorites for user: ${userId}`);
+      const favorites = await this.favoritesService.getUserFavorites(userId);
+      console.log(`Found ${favorites.length} favorites`);
+      return favorites;
     } catch (error) {
-      if (error instanceof NotFoundException) {
-        return {
-          success: false,
-          message: error.message,
-        };
-      }
-      return {
-        success: false,
-        message: "Failed to remove song from favorites",
-      };
+      console.error('Error fetching user favorites:', error);
+      throw error;
     }
   }
 
-  @Get("check/:songId")
-  async checkIsFavorite(@Param("songId", ParseIntPipe) songId: number) {
-    // For simplicity, using a hardcoded user ID (1)
-    const userId = 1;
-
-    const isFavorite = await this.favoritesService.checkIsFavorite(
-      userId,
-      songId
-    );
-    return { isFavorite };
+  @Get('check/:userId/:songId')
+  checkFavorite(
+    @Param('userId') userId: string,
+    @Param('songId') songId: string,
+  ) {
+    return this.favoritesService.checkFavorite(userId, songId);
   }
 }

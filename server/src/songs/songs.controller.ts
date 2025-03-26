@@ -3,47 +3,41 @@ import {
   Get,
   Param,
   Query,
-  ParseIntPipe,
-  NotFoundException,
-  InternalServerErrorException,
-} from "@nestjs/common";
-import { SongsService } from "./songs.service";
-import { Song } from "./song.entity";
-import { Logger } from "@nestjs/common";
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
+import { SongsService } from './songs.service';
+import { SpotifyTrackDto } from '../spotify/dto/spotify-track.dto';
 
-@Controller("songs")
+@Controller('songs')
 export class SongsController {
-  private readonly logger = new Logger(SongsController.name);
-
-  constructor(private songsService: SongsService) {}
+  constructor(private readonly songsService: SongsService) {}
 
   @Get()
-  async findAll(): Promise<Song[]> {
+  findAll() {
     return this.songsService.findAll();
   }
 
-  @Get("search")
-  async searchSongs(@Query("query") query: string) {
-    this.logger.log(`Searching for songs with query: ${query}`);
+  @Get('search')
+  search(@Query('query') query: string): Promise<SpotifyTrackDto[]> {
+    return this.songsService.searchSongs(query);
+  }
+
+  @Get('top-tracks')
+  async getTopTracks() {
     try {
-      const songs = await this.songsService.searchSongs(query);
-      this.logger.log(`Found ${songs.length} songs for query: ${query}`);
-      return songs;
+      console.log('Fetching top tracks...');
+      const result = await this.songsService.getTopTracks();
+      console.log(`Found ${result.length} top tracks`);
+      return result;
     } catch (error) {
-      this.logger.error(`Error searching songs: ${error.message}`, error.stack);
-      throw new InternalServerErrorException("Failed to search songs");
+      console.error('Error in getTopTracks controller:', error);
+      throw error;
     }
   }
 
-  @Get(":id")
-  async findOne(@Param("id", ParseIntPipe) id: number): Promise<Song> {
-    try {
-      return await this.songsService.findOne(id);
-    } catch (error) {
-      if (error instanceof NotFoundException) {
-        throw error;
-      }
-      throw new NotFoundException(`Song with ID ${id} not found`);
-    }
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.songsService.findOne(id);
   }
 }

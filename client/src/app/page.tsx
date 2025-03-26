@@ -1,95 +1,66 @@
 import Link from "next/link";
-import { ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
-import styles from "./page.module.css";
 
-export default function PodcastLandingPage() {
+export default function LandingPage() {
   return (
-    <div className={styles.landingPage}>
-      {/* Background Image */}
-      <div className={styles.backgroundImage} />
-
-      {/* Enhanced Navigation */}
-      <header className="container mx-auto py-4 px-4 relative z-10">
-        <div className={styles.navbarContainer}>
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-r from-pink-500 to-orange-500 flex items-center justify-center">
-              <div className="w-6 h-6 rounded-full bg-black flex items-center justify-center">
-                <div className="w-4 h-4 rounded-full bg-emerald-400"></div>
-              </div>
-            </div>
-            <span className="text-xl font-bold">Voicebox</span>
+    <div className="min-h-screen bg-gradient-to-b from-black to-emerald-950">
+      <header className="container mx-auto px-4 py-6">
+        <nav className="flex justify-between items-center">
+          <div className="text-white text-2xl font-bold">MusicApp</div>
+          <div>
+            <Link href="/dashboard">
+              <Button
+                variant="outline"
+                className="text-white border-white hover:bg-white hover:text-black"
+              >
+                Dashboard
+              </Button>
+            </Link>
           </div>
-
-          <nav className="hidden md:flex items-center gap-8">
-            <div className="relative group">
-              <button className={`${styles.navButton} flex items-center gap-1`}>
-                Demos <ChevronDown className="h-4 w-4" />
-              </button>
-            </div>
-            <div className="relative group">
-              <button className={`${styles.navButton} flex items-center gap-1`}>
-                CMS Pages <ChevronDown className="h-4 w-4" />
-              </button>
-            </div>
-            <div className="relative group">
-              <button className={`${styles.navButton} flex items-center gap-1`}>
-                Essential Pages <ChevronDown className="h-4 w-4" />
-              </button>
-            </div>
-            <Link href="#" className={styles.navButton}>
-              About Us
-            </Link>
-            <Link href="#" className={styles.navButton}>
-              Contact
-            </Link>
-            <Link href="/dashboard" className={styles.dashboardButton}>
-              Go to Dashboard
-            </Link>
-          </nav>
-
-          <Button className={styles.subscribeButton}>Subscribe Now</Button>
-        </div>
+        </nav>
       </header>
 
-      {/* Hero Section */}
-      <section className="container mx-auto px-4 py-24 text-center relative z-10">
-        <h1 className="text-4xl md:text-6xl font-bold mb-6 max-w-3xl mx-auto leading-tight text-white drop-shadow-lg">
-          Find & Listen Your Favorite Podcasts!
+      <main className="container mx-auto px-4 py-20 text-center">
+        <h1 className="text-5xl md:text-7xl font-bold text-white mb-6">
+          Your Music, Your Way
         </h1>
-
-        <div className="flex flex-col sm:flex-row gap-4 justify-center mt-10">
-          <Button className={styles.heroButton}>Start Trial For Free</Button>
-          <Button variant="outline" className={styles.outlineButton}>
-            See All Episodes
+        <p className="text-xl text-gray-300 mb-10 max-w-2xl mx-auto">
+          Discover new music, create playlists, and enjoy your favorite songs
+          all in one place.
+        </p>
+        <Link href="/dashboard">
+          <Button className="bg-green-500 hover:bg-green-600 text-white px-8 py-6 text-lg rounded-full">
+            Start Listening
           </Button>
-        </div>
-      </section>
+        </Link>
+      </main>
 
-      {/* Beautiful image card that appears on scroll */}
-      <section className={styles.imageCardSection}>
-        <div className={styles.cardContainer}>
-          <div className={styles.imageCard}>
-            <Image
-              src="/ca.webp"
-              alt="Beautiful music visualization"
-              width={600}
-              height={400}
-              className={styles.cardImage}
-              priority
-            />
-            <div className={styles.cardContent}>
-              <h2>Experience Music Like Never Before</h2>
-              <p>
-                Discover new artists, create playlists, and enjoy your favorite
-                tracks all in one place.
-              </p>
-              <button className={styles.cardButton}>Explore Now</button>
-            </div>
+      <section className="container mx-auto px-4 py-20">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+          <div className="bg-gray-900 p-8 rounded-lg text-center">
+            <h3 className="text-2xl font-bold text-white mb-4">Discover</h3>
+            <p className="text-gray-300">
+              Find new music based on your preferences and listening habits.
+            </p>
+          </div>
+          <div className="bg-gray-900 p-8 rounded-lg text-center">
+            <h3 className="text-2xl font-bold text-white mb-4">Search</h3>
+            <p className="text-gray-300">
+              Search for your favorite songs, artists, and albums.
+            </p>
+          </div>
+          <div className="bg-gray-900 p-8 rounded-lg text-center">
+            <h3 className="text-2xl font-bold text-white mb-4">Favorites</h3>
+            <p className="text-gray-300">
+              Save your favorite songs and access them anytime.
+            </p>
           </div>
         </div>
       </section>
+
+      <footer className="container mx-auto px-4 py-10 text-center text-gray-400">
+        <p>© 2023 MusicApp. All rights reserved.</p>
+      </footer>
     </div>
   );
 }

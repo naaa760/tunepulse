@@ -1,138 +1,154 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Heart, Search } from "lucide-react";
 import Link from "next/link";
-import SongList from "../../components/Songs/SongList";
-import SongSearch from "../../components/Songs/SongSearch";
-import { searchSongs } from "../../lib/songService";
-import { Song } from "../../types/Song";
-import styles from "./dashboard.module.css";
+import { fetchTopTracks, searchSongs, getUserFavorites } from "@/services/api";
+import SongList from "@/components/SongList";
+import SearchBar from "@/components/SearchBar";
+import { Song } from "@/types";
 
-export default function DashboardPage() {
+// Define types
+interface Song {
+  id: number;
+  title: string;
+  artist: string;
+  album: string | null;
+  duration: number;
+  imageUrl: string | null;
+  audioUrl: string | null;
+}
+
+export default function Dashboard() {
   const [songs, setSongs] = useState<Song[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [favorites, setFavorites] = useState<number[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState<string>("");
-  const [category, setCategory] = useState<string>("Top Hits");
+  const [isSearching, setIsSearching] = useState(false);
 
-  // List of music categories to choose from
-  const categories = [
-    "Top Hits",
-    "Rock Classics",
-    "Hip Hop",
-    "Pop",
-    "Electronic",
-    "Jazz",
-    "Classical",
-  ];
+  // Default user ID for demo purposes
+  const userId = "user-1";
 
-  // Define loadSongsByCategory outside of useEffect so it can be used elsewhere
-  const loadSongsByCategory = useCallback(async (categoryName: string) => {
-    setIsLoading(true);
-    try {
-      const data = await searchSongs(categoryName);
-      if (data && data.length > 0) {
-        setSongs(data);
-        setError(null);
-      } else {
-        // Handle empty results
-        setSongs([]);
-        setError("No songs found. Try a different category.");
-        console.log("No songs found for category:", categoryName);
-      }
-    } catch (err) {
-      console.error("Error loading songs:", err);
-      setError("Failed to load songs. Please try again later.");
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
   useEffect(() => {
-    loadSongsByCategory(category);
-  }, [category, loadSongsByCategory]);
+    const loadTopTracks = async () => {
+      try {
+        setIsLoading(true);
+        const data = await fetchTopTracks();
+        setSongs(data);
+      } catch (error) {
+        console.error("Failed to fetch top tracks:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadTopTracks();
+  }, []);
 
   const handleSearch = async (query: string) => {
     setSearchQuery(query);
-    setIsLoading(true);
+
+    if (!query.trim()) {
+      // If search is cleared, load top tracks again
+      const data = await fetchTopTracks();
+      setSongs(data);
+      setIsSearching(false);
+      return;
+    }
 
     try {
-      if (query.trim() === "") {
-        loadSongsByCategory(category);
-      } else {
-        const results = await searchSongs(query);
-        setSongs(results);
-      }
-      setError(null);
-    } catch (err) {
-      setError("Search failed. Please try again.");
-      console.error(err);
+      setIsSearching(true);
+      const results = await searchSongs(query);
+      setSongs(results);
+    } catch (error) {
+      console.error("Search failed:", error);
     } finally {
-      setIsLoading(false);
+      setIsSearching(false);
     }
   };
 
+  useEffect(() => {
+    const fetchFavorites = async () => {
+      try {
+        const data = await getUserFavorites(userId);
+        setFavorites(data.map((fav) => fav.songId));
+      } catch (error) {
+        console.error("Failed to fetch favorites:", error);
+      }
+    };
+
+    fetchFavorites();
+  }, [userId]);
+
+  const toggleFavorite = async (songId: number) => {
+    try {
+      if (favorites.includes(songId)) {
+        // Remove from favorites
+        await fetch(`${apiUrl}/favorites/${userId}/${songId}`, {
+          method: "DELETE",
+        });
+        setFavorites(favorites.filter((id) => id !== songId));
+      } else {
+        // Add to favorites
+        await fetch(`${apiUrl}/favorites`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ userId, songId }),
+        });
+        setFavorites([...favorites, songId]);
+      }
+    } catch (err) {
+      console.error("Error updating favorites:", err);
+    }
+  };
+
+  // Format duration from seconds to mm:ss
+  const formatDuration = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
+  };
+
   return (
-    <div className={styles.container}>
-      <nav className={styles.navbar}>
-        <div className={styles.logo}>
-          <span className={styles.logoIcon}>🎵</span>
-          <span className={styles.logoText}>Music App</span>
-        </div>
-        <div className={styles.navLinks}>
-          <Link href="/" className={styles.navLink}>
-            Home
-          </Link>
-          <Link
-            href="/dashboard"
-            className={`${styles.navLink} ${styles.active}`}
-          >
-            Dashboard
-          </Link>
-          <Link href="/favorites" className={styles.navLink}>
-            Favorites
+    <div className="min-h-screen bg-gray-900 text-white">
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold text-white">Music Dashboard</h1>
+          <Link href="/favorites">
+            <Button variant="ghost" className="flex items-center gap-2">
+              <Heart className="w-5 h-5" />
+              <span>Favorites</span>
+            </Button>
           </Link>
         </div>
-      </nav>
 
-      <main className={styles.main}>
-        <h1 className={styles.title}>Music Dashboard</h1>
+        <SearchBar onSearch={handleSearch} />
 
-        <div className={styles.searchContainer}>
-          <SongSearch onSearch={handleSearch} />
-        </div>
-
-        <div className={styles.categoriesContainer}>
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              className={`${styles.categoryButton} ${
-                category === cat ? styles.active : ""
-              }`}
-              onClick={() => {
-                setCategory(cat);
-                setSearchQuery("");
-              }}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
-
-        <div className={styles.contentContainer}>
-          <h2 className={styles.sectionTitle}>
-            {searchQuery
-              ? `Search Results for "${searchQuery}"`
-              : `${category} Songs`}
+        <div className="mt-8">
+          <h2 className="text-2xl font-semibold mb-4">
+            {searchQuery ? `Search Results for "${searchQuery}"` : "Top Tracks"}
           </h2>
 
-          <SongList songs={songs} isLoading={isLoading} error={error} />
+          {isLoading || isSearching ? (
+            <div className="flex justify-center items-center h-64">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
+            </div>
+          ) : songs.length > 0 ? (
+            <SongList songs={songs} userId={userId} />
+          ) : (
+            <div className="text-center py-10">
+              <p className="text-gray-400">No songs found</p>
+            </div>
+          )}
         </div>
-      </main>
-
-      <footer className={styles.footer}>
-        <p>© 2023 Music App. All rights reserved.</p>
-      </footer>
+      </div>
     </div>
   );
 }

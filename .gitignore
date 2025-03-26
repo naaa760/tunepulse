@@ -1,39 +1,47 @@
-# Root level .gitignore
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-node_modules/
+node_modules
+/.pnp
+.pnp.js
 
-# environment variables
-.env
-.env.*
-!.env.example
+# testing
+/coverage
 
-# build outputs
-dist/
-build/
-.next/
-out/
+# next.js
+/.next/
+/out/
 
-# logs
-logs
-*.log
+# production
+/build
+/dist
+
+# misc
+.DS_Store
+*.pem
+
+# debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# testing
-coverage/
-.nyc_output/
-playwright-report/
-test-results/
+# local env files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
-# misc
-.DS_Store
-.idea/
-.vscode/
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-.vercel 
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# Prisma
+/prisma/migrations/
+
+# IDE
+.idea
+.vscode 
