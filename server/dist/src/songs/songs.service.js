@@ -136,6 +136,11 @@ let SongsService = SongsService_1 = class SongsService {
                 imageUrl: track.album?.images?.[0]?.url || null,
                 popularity: track.popularity || 0,
                 spotifyId: track.id,
+                genre: "Unknown",
+                previewUrl: track.preview_url || null,
+                externalUrl: track.external_urls?.spotify || null,
+                createdAt: new Date(),
+                updatedAt: new Date(),
             }));
             this.logger.log(`Found ${songs.length} songs on Spotify for query: ${query}`);
             return songs;

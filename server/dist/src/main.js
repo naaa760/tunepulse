@@ -15,8 +15,12 @@ async function bootstrap() {
     });
     app.useGlobalPipes(new common_1.ValidationPipe());
     const port = process.env.PORT || 4000;
-    await app.listen(port);
-    logger.log(`Application listening on port ${port}`);
+    logger.log(`Attempting to listen on port ${port}`);
+    await app.listen(port, "0.0.0.0");
+    logger.log(`Application successfully started and listening on port ${port}`);
 }
-bootstrap();
+bootstrap().catch((err) => {
+    console.error("Failed to start application:", err);
+    process.exit(1);
+});
 //# sourceMappingURL=main.js.map

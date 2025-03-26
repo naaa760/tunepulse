@@ -22,9 +22,19 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
 
   // Use PORT from environment or default to 4000
+  // Render sets the PORT environment variable
   const port = process.env.PORT || 4000;
 
-  await app.listen(port);
-  logger.log(`Application listening on port ${port}`);
+  // Log the port we're using
+  logger.log(`Attempting to listen on port ${port}`);
+
+  // Listen on all interfaces (0.0.0.0) to make it accessible from outside
+  await app.listen(port, "0.0.0.0");
+
+  logger.log(`Application successfully started and listening on port ${port}`);
 }
-bootstrap();
+
+bootstrap().catch((err) => {
+  console.error("Failed to start application:", err);
+  process.exit(1);
+});

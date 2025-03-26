@@ -142,7 +142,7 @@ export class SongsService {
       );
       const spotifyTracks = await this.spotifyService.searchTracks(query);
 
-      // Map Spotify tracks to our Song entity format
+      // Map Spotify tracks to our Song entity format with all required properties
       const songs = spotifyTracks.map((track) => ({
         id: null, // This will be assigned by the database
         title: track.name,
@@ -155,7 +155,12 @@ export class SongsService {
         imageUrl: track.album?.images?.[0]?.url || null,
         popularity: track.popularity || 0,
         spotifyId: track.id,
-      }));
+        genre: "Unknown", // Add missing properties
+        previewUrl: track.preview_url || null,
+        externalUrl: track.external_urls?.spotify || null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      })) as Song[]; // Cast to Song[] to satisfy TypeScript
 
       this.logger.log(
         `Found ${songs.length} songs on Spotify for query: ${query}`

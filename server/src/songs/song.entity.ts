@@ -1,17 +1,17 @@
 import { Song as PrismaSong } from "@prisma/client";
 
-export class Song implements PrismaSong {
-  id: number;
-  spotifyId: string | null;
+export class Song {
+  id: number | null;
   title: string;
   artist: string;
-  album: string | null;
+  album: string;
   releaseYear: number | null;
-  genre: string | null;
-  duration: number | null;
+  duration: number;
   imageUrl: string | null;
+  popularity: number;
+  spotifyId: string;
+  genre: string;
   previewUrl: string | null;
-  popularity: number | null;
   externalUrl: string | null;
   createdAt: Date;
   updatedAt: Date;
