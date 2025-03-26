@@ -1,7 +1,6 @@
 import { Song } from "@/types/Song";
 
-const API_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api/songs";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
 
 export async function getSongs(query?: string): Promise<Song[]> {
   const url = query

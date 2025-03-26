@@ -9,7 +9,7 @@ async function bootstrap() {
 
   // Enable CORS for your frontend
   app.enableCors({
-    origin: '*', // Or specify your frontend URL
+    origin: ['https://tunepulse-three.vercel.app', 'http://localhost:3000'],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });
@@ -25,6 +25,7 @@ async function bootstrap() {
   // Add request logging middleware with proper types
   app.use((req: Request, res: Response, next: NextFunction) => {
     logger.log(`${req.method} ${req.url}`);
+    logger.log(`Origin: ${req.headers.origin}`);
     next();
   });
 
