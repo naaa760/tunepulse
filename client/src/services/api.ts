@@ -1,8 +1,13 @@
 import axios from "axios";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+// In production, use the deployed backend URL
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL ||
+  (typeof window !== "undefined" && window.location.hostname === "localhost"
+    ? "http://localhost:4000"
+    : "https://tunepulse-backend.onrender.com");
 
-console.log("API URL:", API_URL);
+console.log("Using API URL:", API_URL);
 
 const axiosInstance = axios.create({
   baseURL: API_URL,
