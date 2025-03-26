@@ -1,7 +1,6 @@
 import { Favorite } from "@/types/Favorite";
 
-// Replace with your ACTUAL Render backend URL
-const API_URL = "https://tunepulse-backend.onrender.com/api";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
 
 export async function getFavorites(): Promise<Favorite[]> {
   const response = await fetch(`${API_URL}/favorites`);

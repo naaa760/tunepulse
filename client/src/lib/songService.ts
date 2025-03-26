@@ -1,8 +1,6 @@
 import { Song } from "@/types/Song";
 
-// Replace with your ACTUAL Render backend URL
-const API_URL = "https://tunepulse-backend.onrender.com/api";
-// const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
 
 export async function getSongs(query?: string): Promise<Song[]> {
   const url = query

@@ -7,11 +7,11 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const logger = new Logger('Bootstrap');
 
-  // Enable CORS with a wildcard (temporary fix)
+  // Enable CORS for your frontend
   app.enableCors({
-    origin: '*',
+    origin: '*', // Or specify your frontend URL
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: false, // Must be false with wildcard origin
+    credentials: true,
   });
 
   // Enable validation
@@ -25,8 +25,6 @@ async function bootstrap() {
   // Add request logging middleware with proper types
   app.use((req: Request, res: Response, next: NextFunction) => {
     logger.log(`${req.method} ${req.url}`);
-    logger.log(`Request from: ${req.headers.origin || 'Unknown origin'}`);
-    logger.log(`Headers: ${JSON.stringify(req.headers)}`);
     next();
   });
 
