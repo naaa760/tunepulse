@@ -22,6 +22,7 @@ const SongSearch: React.FC<SongSearchProps> = ({ onSearch }) => {
     debouncedSearch(query);
   };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
       e.preventDefault();
